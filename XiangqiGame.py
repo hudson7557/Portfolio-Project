@@ -7,6 +7,8 @@ class XiangqiGame:
             the board. The board also has a coordinate grid with A-I on top and
             1-10 on the left side. Open spaces denoted by a single space " ".
             """
+
+            self._game_state = "UNFINISHED"
             self._board = [["  ", "A ", "  ", "B ", "  ", "C ", "  ", "D", "  ",
                         " E", "  ", " F", "  ", " G", "  ", " H", "  ", " I"],
                        ["1 ", " ", " - ", " ", " - ", " ", " - ", " ", " - ",
@@ -56,8 +58,13 @@ class XiangqiGame:
                         " ", " - ", " ", " - ", " ", " - ", " ", " - ", " "]]
 
       def display_board(self):
+            """
+            Method for displaying the targeted Xiangqi board
+            """
             for line in self._board:
                   print(" ".join(line))
+
+
 
 
 board1 = XiangqiGame()

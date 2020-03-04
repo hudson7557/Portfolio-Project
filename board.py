@@ -1,3 +1,20 @@
+
+class game_pieces:
+
+      def __init__(self, name, location, movement):
+            self._name = name
+            self._location = location
+            self._movement = movement
+
+class general(game_pieces):
+
+      def __init__(self, name, location):
+            self._movement = location + 1
+            super().__init__(name, location)
+
+
+
+
 # this creates the board
 
 print("  ", "A ", "  ", "B ", "  ", "C ", "  ", "D", "  ", " E", "  ", " F", "  ",
