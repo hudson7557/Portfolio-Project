@@ -43,6 +43,12 @@ class XiangqiGame:
             print("inconceivable!")
             return
 
+        # make sure the coordinates being targets actually contain a piece
+        if self._board[self._convertNum[target_coordinates[1:]]][
+            self._convertAlpha[target_coordinates[0]]] == " ":
+            print("No valid piece in location")
+            return
+
         # make sure the coordinates being moved to are on the board using the
         # dictionaries to check if the string is valid or not.
         if move_to_coordinates[0] not in self._convertAlpha or \
@@ -50,21 +56,18 @@ class XiangqiGame:
             print("Nah dog")
             return
 
-        # make sure the coordinates being targets actually contain a piece
-        if self._board[self._convertNum[target_coordinates[1:]]][
-            self._convertAlpha[target_coordinates[0]]] == " ":
-            print("No valid piece in location")
-            return
-
         # make sure the move_to_coordinates are on the board.
         # get the target pieces object
         current_piece = self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]]
+
         # call the target pieces movement ability with the new coordinates
         # each piece contains it's own control flow to check if a move is valid
         # if the move is valid the pieces movement returns true and the piece is
         # moved on the list.
         if current_piece.movement(move_to_coordinates) == True:
+
+            # moves the piece
             self._board[self._convertNum[move_to_coordinates[1:]]][
                 self._convertAlpha[move_to_coordinates[0]]] = current_piece
 
@@ -73,6 +76,7 @@ class XiangqiGame:
             self._board[self._convertNum[target_coordinates[1:]]][
                 self._convertAlpha[target_coordinates[0]]] = " "
             return True
+
         else:
             return False
 
