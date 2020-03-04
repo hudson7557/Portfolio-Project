@@ -43,11 +43,17 @@ class XiangqiGame:
             print("inconceivable!")
             return
 
-        # make sure the coordinates being targeted are on the board using the
+        # make sure the coordinates being moved to are on the board using the
         # dictionaries to check if the string is valid or not.
         if move_to_coordinates[0] not in self._convertAlpha or \
                 move_to_coordinates[1:] not in self._convertNum:
             print("Nah dog")
+            return
+
+        # make sure the coordinates being targets actually contain a piece
+        if self._board[self._convertNum[target_coordinates[1:]]][
+            self._convertAlpha[target_coordinates[0]]] == " ":
+            print("No valid piece in location")
             return
 
         # make sure the move_to_coordinates are on the board.
@@ -196,3 +202,9 @@ class general(game_pieces):
             else:
                 print("1")
                 return False
+
+board1 = XiangqiGame()
+board1.display_board()
+board1.make_move("E1", "E2")
+print("break")
+board1.display_board()
