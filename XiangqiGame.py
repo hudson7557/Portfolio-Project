@@ -577,20 +577,138 @@ class Cannon(GamePieces):
                         return True
                     # if there is more than one piece to jump we return false.
                     else:
+                        print("Can't jump more than one piece.")
+                        return False
+
+                else:
+                    print("That's your own piece")
+                    return False
+
+        # moving right?
+        if old_x < new_x and old_y == new_y:
+            space = old_x
+            piece_counter = 0
+
+            # if the move is not capturing something
+            if board.check_space(new_x, new_y) == " ":
+                # the while loop check to make sure nothing is in the way since
+                # this is a non-capture move
+                while space != new_x:
+                    space += 1
+                    # if a space is not an empty space the move cannot be
+                    # completed and false is returned.
+                    if board.check_space(space, old_y) != " ":
+                        print("A piece is in your way, you cannot jump a piece"
+                              "unless you are capturing.")
+                        return False
+                # if all the spaces are empty the false statement never triggers
+                # and we return true.
+                self._location = next_location
+                print("yes")
+                return True
+
+            # if the move is a capture move
+            if board.check_space(new_x, new_y) != " ":
+                # first check the color, if they are different we check for a
+                # jump, if it's friendly we return false.
+                if board.check_space(new_x, new_y).get_color() != \
+                    self.get_color():
+                    # while loop checks to see how many pieces are in between
+                    # the start and end (A to B) we take 1 off the new_y because
+                    # we don't want to count the piece to be taken.
+                    while space != new_x - 1:
+                        space += 1
+                        # the number of pieces inbetween are tracked by
+                        # incrementing the piece_counter
+                        if board.check_space(space, old_x) != " ":
+                            piece_counter += 1
+                    # once the while loop is complete we check if there is only
+                    # one piece, if there is only 1 the move goes through
+                    if piece_counter == 1:
+                        print("TAKE THE ENEMY")
+                        self._location = next_location
+                        return True
+                    # if there is more than one piece to jump we return false.
+                    else:
+                        print("Can't jump more than one piece.")
+                        return False
+
+                else:
+                    print("That's your own piece")
+                    return False
+
+        if old_x > new_x and old_y == new_y:
+            space = old_x
+            piece_counter = 0
+
+            # if the move is not capturing something
+            if board.check_space(new_x, new_y) == " ":
+                # the while loop check to make sure nothing is in the way since
+                # this is a non-capture move
+                while space != new_x:
+                    space -= 1
+                    # if a space is not an empty space the move cannot be
+                    # completed and false is returned.
+                    if board.check_space(space, old_y) != " ":
+                        print("A piece is in your way, you cannot jump a piece"
+                              "unless you are capturing.")
+                        return False
+                # if all the spaces are empty the false statement never triggers
+                # and we return true.
+                self._location = next_location
+                print("yes")
+                return True
+
+            # if the move is a capture move
+            if board.check_space(new_x, new_y) != " ":
+                # first check the color, if they are different we check for a
+                # jump, if it's friendly we return false.
+                if board.check_space(new_x, new_y).get_color() != \
+                    self.get_color():
+                    # while loop checks to see how many pieces are in between
+                    # the start and end (A to B) we take 1 off the new_y because
+                    # we don't want to count the piece to be taken.
+                    while space != new_x + 1:
+                        space -= 1
+                        # the number of pieces inbetween are tracked by
+                        # incrementing the piece_counter
+                        if board.check_space(space, old_y) != " ":
+                            piece_counter += 1
+                    # once the while loop is complete we check if there is only
+                    # one piece, if there is only 1 the move goes through
+                    if piece_counter == 1:
+                        print("TAKE THE ENEMY")
+                        self._location = next_location
+                        return True
+                    # if there is more than one piece to jump we return false.
+                    else:
+                        print("Can't jump more than one piece.")
                         return False
 
                 else:
                     print("That's your own piece")
                     return False
         else:
+            print("Because")
             return False
+
+
+
 
 # For testing make_move on the red soldier
 board1 = XiangqiGame()
 board1.display_board()
-# board1.make_move("B8", "B6")
-# board1.make_move("B6", "B7")
-# board1.make_move("B7", "B8")
-board1.make_move("A8", "A4")
+board1.make_move("B8", "B6") # true, forwards
+board1.make_move("B6", "B7") # true, backwards
+board1.make_move("B7", "B8") # true, backwards
+board1.make_move("B8", "D8") # true, right move
+board1.make_move("D8", "E8") # true, right move
+board1.make_move("E8", "E7") # false, moving into it's own piece
+board1.make_move("E8", "E6") # false, jumping a piece on a non-cap move
+board1.make_move("E8", "E4") # true, capturing a piece
+board1.make_move("E4", "E5") # True
+board1.make_move("E5", "A5") # True
+board1.make_move("A5", "A1") # true, capturing the enemy
+board1.make_move("A1", "A8") # false, jumping two
 board1.display_board()
 
