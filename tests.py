@@ -54,3 +54,27 @@ board1.make_move("D5", "D2") # false, more than one space moved left
 board1.make_move("D5", "D10") # false, more than one space moved right
 board1.display_board()
 """
+
+"""
+For testing make_move on black soldier class
+board1 = XiangqiGame()
+board1.display_board()
+board1.make_move("E1", "E2")
+print("break")
+board1.display_board()
+board1.make_move("A4", "A5") # dope
+board1.make_move("A5", "B5") # false, moving right before crossing river
+board1.make_move("C4", "B4") # false, moving left before crossing river
+board1.make_move("C4", "C3") # false, backwards move
+board1.make_move("A5", "A6") # crossing the river
+board1.make_move("A6", "B6") # True, moved one to the right
+board1.make_move("B6", "B5") # false, backwards
+board1.make_move("B6", "B3") # false, more than one space moved.
+board1.make_move("B6", "A1") # false, impossible move
+board1.make_move("B6", "A6") # true, moved left
+board1.make_move("A6", "B6") # true, moved right
+board1.make_move("B6", "A7") # false, diagonal move
+board1.make_move("B6", "C6") # true, more than one space moved right
+board1.make_move("C6", "A6") # false, more than one space moved right
+board1.display_board()
+"""

@@ -57,7 +57,7 @@ class XiangqiGame:
             print("inconceivable!")
             return
 
-        # make sure the coordinates being targets actually contain a piece
+        # make sure the coordinates being targeted actually contain a piece
         if self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]] == " ":
             print("No valid piece in location")
@@ -122,7 +122,7 @@ class game_pieces:
         self._color = color
         self._location = location
         self._convertAlpha = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5,
-                           "G": 6, "H": 7}  # used for coordinate translation
+                           "G": 6, "H": 7, "I": 8}  # used for coordinate translation
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
                            "7": 6, "8": 7, "9": 8, "10": 9}
 
@@ -173,8 +173,6 @@ class general(game_pieces):
                 else:
                     print("Not allowed")
                     return False
-
-
 
             # first we check to see if the y axis is changing
             if old_y != new_y:
@@ -261,7 +259,7 @@ class soldier(game_pieces):
         if self._color == "red":
 
             # check to see if the red soldier has crossed the river or not.
-            if old_y >= 6:
+            if old_y >= 5:
 
                 # we subtract 1 from the old_y axis to make sure the move is
                 # only one space and that the piece has moved forward. At this
@@ -276,7 +274,7 @@ class soldier(game_pieces):
                     print("Nopers")
                     return False
             # if the soldier has crossed the river yet.
-            if old_y < 6:
+            if old_y <= 4:
 
                 if old_y - 1 == new_y and old_x == new_x:
                     print("Moved forward")
@@ -295,8 +293,7 @@ class soldier(game_pieces):
         if self._color == "black":
 
             # check to see if the red soldier has crossed the river or not.
-            if old_y <= 5: # HAS AN ERROR IN IT HERE, going to work on if when
-                # I'm not tired.
+            if old_y <= 4:
 
                 # we subtract 1 from the old_y axis to make sure the move is
                 # only one space and that the piece has moved forward. At this
@@ -311,7 +308,7 @@ class soldier(game_pieces):
                     print("Nopers")
                     return False
             # if the soldier has crossed the river yet.
-            if old_y > 5:
+            if old_y >= 5:
 
                 if old_y + 1 == new_y and old_x == new_x:
                     print("Moved forward")
@@ -327,20 +324,24 @@ class soldier(game_pieces):
                     print("Impossible")
                     return False
 
+# For testing make_move on the red soldier
 board1 = XiangqiGame()
 board1.display_board()
-board1.make_move("E1", "E2")
 print("break")
 board1.display_board()
-board1.make_move("A4", "A5") # dope
-board1.make_move("A5", "A6") # crossing the river
-board1.make_move("A6", "B6") # True, moved one to the right
-"""board1.make_move("D5", "D6") # false, backwards
+board1.make_move("C7", "C6") # dope
+board1.make_move("C6", "C7") # false backwards
+board1.make_move("C6", "B5") # false diagonal
+board1.make_move("C6", "B6") # false, sideways
+board1.make_move("C6", "D6") # false, sideways
+board1.make_move("C6", "C5") # crossing the river
+board1.make_move("C5", "D5") # true, moved right
+board1.make_move("D5", "D6") # false, backwards
 board1.make_move("D5", "D3") # false, more than one space moved.
 board1.make_move("D5", "A1") # false, impossible move
 board1.make_move("D5", "C5") # true, moved left
 board1.make_move("C5", "D5") # true, moved right
 board1.make_move("D5", "C4") # false, diagonal move
 board1.make_move("D5", "D2") # false, more than one space moved left
-board1.make_move("D5", "D10") # false, more than one space moved right"""
+board1.make_move("D5", "D10") # false, more than one space moved right
 board1.display_board()
