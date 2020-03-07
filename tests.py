@@ -111,3 +111,21 @@ board1.make_move("D5", "C5") # true, left movement
 board1.make_move("C4", "C5") # true, forward, takes piece
 board1.display_character("C5")
 board1.display_board()"""
+
+"""# For testing make_move on Chariots
+board1 = XiangqiGame()
+board1.display_board()
+board1.make_move("I10", "H10")
+board1.make_move("H10", "I10")  # testing moving left and right.
+board1.make_move("I10", "F10")
+board1.make_move("F10", "G10")
+board1.make_move("G10", "G8")
+board1.make_move("G8", "G10")
+board1.make_move("G10", "G8")
+board1.make_move("G8", "F8")
+board1.make_move("F8", "F1")
+board1.make_move("F1", 'E1')
+board1.make_move("E1", "I1")
+board1.make_move("I1", "A1")
+board1.make_move("A1", "A3")
+board1.display_board()"""
