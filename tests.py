@@ -130,3 +130,22 @@ board1.make_move("I1", "A1")
 board1.make_move("A1", "A3")
 board1.make_move("A3", "B2")
 board1.display_board()"""
+
+"""
+# For testing make_move on the cannons 
+board1 = XiangqiGame()
+board1.display_board()
+board1.make_move("B8", "B6") # true, forwards
+board1.make_move("B6", "B7") # true, backwards
+board1.make_move("B7", "B8") # true, backwards
+board1.make_move("B8", "D8") # true, right move
+board1.make_move("D8", "E8") # true, right move
+board1.make_move("E8", "E7") # false, moving into it's own piece
+board1.make_move("E8", "E6") # false, jumping a piece on a non-cap move
+board1.make_move("E8", "E4") # true, capturing a piece
+board1.make_move("E4", "E5") # True
+board1.make_move("E5", "A5") # True
+board1.make_move("A5", "A1") # true, capturing the enemy
+board1.make_move("A1", "A8") # false, jumping two
+board1.display_board()
+"""

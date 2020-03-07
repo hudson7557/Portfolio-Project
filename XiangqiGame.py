@@ -15,7 +15,7 @@ class XiangqiGame:
         self._game_state = "UNFINISHED"
 
         self._board = [
-            [Chariot("black", "I10"), " ", " ", " ", General("black", "E1"), " ", " ", " ", Chariot("black", "I10")],
+            [Chariot("black", "A1"), " ", " ", " ", General("black", "E1"), " ", " ", " ", Chariot("black", "I1")],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
             [" ", Cannon("red", "B3"), " ", " ", " ", " ", " ", Cannon("red", "B8"), " "],
             [Soldier("black", "A4"), " ", Soldier("black", "C4"), " ",
@@ -691,24 +691,3 @@ class Cannon(GamePieces):
         else:
             print("Because")
             return False
-
-
-
-
-# For testing make_move on the red soldier
-board1 = XiangqiGame()
-board1.display_board()
-board1.make_move("B8", "B6") # true, forwards
-board1.make_move("B6", "B7") # true, backwards
-board1.make_move("B7", "B8") # true, backwards
-board1.make_move("B8", "D8") # true, right move
-board1.make_move("D8", "E8") # true, right move
-board1.make_move("E8", "E7") # false, moving into it's own piece
-board1.make_move("E8", "E6") # false, jumping a piece on a non-cap move
-board1.make_move("E8", "E4") # true, capturing a piece
-board1.make_move("E4", "E5") # True
-board1.make_move("E5", "A5") # True
-board1.make_move("A5", "A1") # true, capturing the enemy
-board1.make_move("A1", "A8") # false, jumping two
-board1.display_board()
-
