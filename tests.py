@@ -34,16 +34,18 @@ print("break")
 board1.display_board()
 """
 
-"""
-For testing make_move on the red soldier
+"""# For testing make_move on the red soldier
 board1 = XiangqiGame()
 board1.display_board()
-board1.make_move("E1", "E2")
 print("break")
 board1.display_board()
 board1.make_move("C7", "C6") # dope
+board1.make_move("C6", "C7") # false backwards
+board1.make_move("C6", "B5") # false diagonal
+board1.make_move("C6", "B6") # false, sideways
+board1.make_move("C6", "D6") # false, sideways
 board1.make_move("C6", "C5") # crossing the river
-board1.make_move("C5", "D5")
+board1.make_move("C5", "D5") # true, moved right
 board1.make_move("D5", "D6") # false, backwards
 board1.make_move("D5", "D3") # false, more than one space moved.
 board1.make_move("D5", "A1") # false, impossible move
@@ -52,8 +54,7 @@ board1.make_move("C5", "D5") # true, moved right
 board1.make_move("D5", "C4") # false, diagonal move
 board1.make_move("D5", "D2") # false, more than one space moved left
 board1.make_move("D5", "D10") # false, more than one space moved right
-board1.display_board()
-"""
+board1.display_board()"""
 
 """
 For testing make_move on black soldier class
@@ -78,3 +79,35 @@ board1.make_move("B6", "C6") # true, more than one space moved right
 board1.make_move("C6", "A6") # false, more than one space moved right
 board1.display_board()
 """
+
+"""
+# For testing make_move not allowing people to take their own pieces 
+board1 = XiangqiGame()
+board1.display_board()
+print("break")
+board1.display_board()
+board1.make_move("C7", "C6") # dope
+board1.make_move("C6", "C5") # crossing the river
+board1.make_move("C5", "D5") # true, moved right
+board1.make_move("E7", "E6") # true, move forward
+board1.make_move("E6", "E5") # crossing the river
+board1.make_move("E5", "D5") # false, same team
+board1.display_board()"""
+
+"""
+# For testing make_move taking a piece
+board1 = XiangqiGame()
+board1.display_board()
+print("break")
+board1.display_board()
+board1.make_move("C7", "C6") # dope
+board1.make_move("C6", "C5") # crossing the river
+board1.make_move("C5", "D5") # true, moved right
+board1.make_move("E7", "E6") # true, move forward
+board1.make_move("E6", "E5") # crossing the river
+board1.make_move("E5", "D5") # false, same team
+board1.make_move("D5", "E5") # false, same team
+board1.make_move("D5", "C5") # true, left movement
+board1.make_move("C4", "C5") # true, forward, takes piece
+board1.display_character("C5")
+board1.display_board()"""

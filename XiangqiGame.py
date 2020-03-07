@@ -14,23 +14,27 @@ class XiangqiGame:
 
         self._game_state = "UNFINISHED"
 
-        self._board = [[" ", " ", " ", " ", general("black", "E1"), " ", " ", " ", " "],
-                       [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-                       [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-                       [soldier("black", "A4"), " ", soldier("black", "C4"), " ", soldier("black", "E4"), " ", soldier("black", "G4"), " ", soldier("black", "I4")],
-                       [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-                       [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-                       [soldier("red", "A7"), " ", soldier("red", "C7"), " ", soldier("red", "E7"), " ", soldier("red", "G7"), " ", soldier("red", "I7")],
-                       [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-                       [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-                       [" ", " ", " ", " ", general("red", "E10"), " ", " ", " ", " "]]
+        self._board = [
+            [" ", " ", " ", " ", General("black", "E1"), " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [Soldier("black", "A4"), " ", Soldier("black", "C4"), " ",
+             Soldier("black", "E4"), " ", Soldier("black", "G4"), " ",
+             Soldier("black", "I4")],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [Soldier("red", "A7"), " ", Soldier("red", "C7"), " ",
+             Soldier("red", "E7"), " ", Soldier("red", "G7"), " ",
+             Soldier("red", "I7")],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", General("red", "E10"), " ", " ", " ", " "]]
 
         self._convertAlpha = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5,
-                           "G": 6, "H": 7, "I": 8}
+                              "G": 6, "H": 7, "I": 8}
 
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
-                           "7": 6, "8": 7, "9": 8, "10": 9}
-
+                            "7": 6, "8": 7, "9": 8, "10": 9}
 
     def display_board(self):
         """
@@ -75,11 +79,24 @@ class XiangqiGame:
         current_piece = self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]]
 
+        # make sure the space the piece is moving to is not holding one of their
+        # own pieces.
+
+        # see if the move_to space is occupied
+        if self._board[self._convertNum[move_to_coordinates[1:]]][
+            self._convertAlpha[move_to_coordinates[0]]] != " ":
+
+            if current_piece.get_color() == self._board[self._convertNum[
+                move_to_coordinates[1:]]][self._convertAlpha[
+                    move_to_coordinates[0]]].get_color():
+                print("Same team!")
+                return False
+
         # call the target pieces movement ability with the new coordinates
         # each piece contains it's own control flow to check if a move is valid
         # if the move is valid the pieces movement returns true and the piece is
         # moved on the list.
-        if current_piece.movement(move_to_coordinates) == True:
+        if current_piece.movement(self, move_to_coordinates) == True:
 
             # moves the piece
             self._board[self._convertNum[move_to_coordinates[1:]]][
@@ -112,7 +129,11 @@ class XiangqiGame:
         """
         return self._game_state
 
-class game_pieces:
+    def check_space(self, x_coord, y_coord):
+        return self._board[y_coord][x_coord]
+
+
+class GamePieces:
     """
     A super class for all the other game pieces that gets used to streamline
     initializing different pieces.
@@ -122,11 +143,16 @@ class game_pieces:
         self._color = color
         self._location = location
         self._convertAlpha = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5,
-                           "G": 6, "H": 7, "I": 8}  # used for coordinate translation
+                              "G": 6, "H": 7,
+                              "I": 8}  # used for coordinate translation
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
-                           "7": 6, "8": 7, "9": 8, "10": 9}
+                            "7": 6, "8": 7, "9": 8, "10": 9}
 
-class general(game_pieces):
+    def get_color(self):
+        return self._color
+
+
+class General(GamePieces):
     """
     This class creates a General object, it inherits from game_pieces and adds
     additional data members specific to the General.
@@ -137,7 +163,7 @@ class general(game_pieces):
         self._character = "師"
         super().__init__(color, location)
 
-    def movement(self, next_location):
+    def movement(self, board, next_location):
         """
         This is the General's specific movement method. It will check to make
         sure that the input movement is allowed for the General.
@@ -179,7 +205,7 @@ class general(game_pieces):
                 # if y axis is changing we make sure it's only one space moved
                 if new_y == old_y + 1 or new_y == old_y - 1:
                     # then we make sure the move is in the palace
-                    if  7 <= new_y <= 9:
+                    if 7 <= new_y <= 9:
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
                         self._location = next_location
@@ -242,14 +268,15 @@ class general(game_pieces):
                 print("1")
                 return False
 
-class soldier(game_pieces):
+
+class Soldier(GamePieces):
 
     def __init__(self, color, location):
         self._name = "Soldier"
         self._character = "兵"
         super().__init__(color, location)
 
-    def movement(self, next_location):
+    def movement(self, board, next_location):
 
         old_x = self._convertAlpha[self._location[0]]
         old_y = self._convertNum[self._location[1:]]
@@ -281,7 +308,7 @@ class soldier(game_pieces):
                     self._location = next_location
                     return True
 
-                if (old_x - 1 == new_x or old_x + 1 == new_x) and\
+                if (old_x - 1 == new_x or old_x + 1 == new_x) and \
                         old_y == new_y:
                     self._location = next_location
                     print("Moved left or right")
@@ -324,24 +351,37 @@ class soldier(game_pieces):
                     print("Impossible")
                     return False
 
+
+class Chariot(GamePieces):
+
+    def __init__(self, color, location):
+        self._name = "Chariot"
+        self._character = "車"
+        super().__init__(color, location)
+
+    def movement(self, board, next_location):
+
+        old_x = self._convertAlpha[self._location[0]]
+        old_y = self._convertNum[self._location[1:]]
+        new_x = self._convertAlpha[next_location[0]]
+        new_y = self._convertNum[next_location[1:]]
+
+        # moving left?
+        if old_x > new_x and old_y == new_y:
+            space = old_x
+            while space != new_x - 1:
+                space -= 1
+                if board.check_space(space, old_y) != " ":
+                    if board.check_space(space, old_y).get_color() != \
+                            self.get_color():
+                        print("Take a piece")
+                        return True
+                    else:
+                        return False
+                else:
+                    return True
+
+
 # For testing make_move on the red soldier
 board1 = XiangqiGame()
-board1.display_board()
-print("break")
-board1.display_board()
-board1.make_move("C7", "C6") # dope
-board1.make_move("C6", "C7") # false backwards
-board1.make_move("C6", "B5") # false diagonal
-board1.make_move("C6", "B6") # false, sideways
-board1.make_move("C6", "D6") # false, sideways
-board1.make_move("C6", "C5") # crossing the river
-board1.make_move("C5", "D5") # true, moved right
-board1.make_move("D5", "D6") # false, backwards
-board1.make_move("D5", "D3") # false, more than one space moved.
-board1.make_move("D5", "A1") # false, impossible move
-board1.make_move("D5", "C5") # true, moved left
-board1.make_move("C5", "D5") # true, moved right
-board1.make_move("D5", "C4") # false, diagonal move
-board1.make_move("D5", "D2") # false, more than one space moved left
-board1.make_move("D5", "D10") # false, more than one space moved right
 board1.display_board()
