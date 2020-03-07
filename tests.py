@@ -128,4 +128,5 @@ board1.make_move("F1", 'E1')
 board1.make_move("E1", "I1")
 board1.make_move("I1", "A1")
 board1.make_move("A1", "A3")
+board1.make_move("A3", "B2")
 board1.display_board()"""
