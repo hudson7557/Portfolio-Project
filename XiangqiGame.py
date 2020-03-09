@@ -15,8 +15,10 @@ class XiangqiGame:
         self._game_state = "UNFINISHED"
 
         self._board = [
-            [Chariot("black", "A1"), Horse("black", "B1"), Elephant("black", "C1"), Advisor("black", "D1"),
-             General("black", "E1"), Advisor("black", "F1"), Elephant("black", "G1"), Horse("black", "H1"),
+            [Chariot("black", "A1"), Horse("black", "B1"),
+             Elephant("black", "C1"), Advisor("black", "D1"),
+             General("black", "E1"), Advisor("black", "F1"),
+             Elephant("black", "G1"), Horse("black", "H1"),
              Chariot("black", "I1")],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
             [" ", Cannon("red", "B3"), " ", " ", " ", " ", " ",
@@ -32,16 +34,18 @@ class XiangqiGame:
             [" ", Cannon("red", "B8"), " ", " ", " ", " ", " ",
              Cannon("red", "H8"), " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [Chariot("red", "A10"), Horse("red", "B10"), Elephant("red", "C10"), Advisor("red", "D10"),
-             General("red", "E10"), Advisor("red", "F10"), Elephant("red", "G10"), Horse("red", "H10"),
+            [Chariot("red", "A10"), Horse("red", "B10"), Elephant("red", "C10"),
+             Advisor("red", "D10"),
+             General("red", "E10"), Advisor("red", "F10"),
+             Elephant("red", "G10"), Horse("red", "H10"),
              Chariot("red", "I10")]]
 
         # convert contains both the capital and lower case to allow for
         # flexibility. It also allows us to not use .upper() on all comparisons
         # which saves some code on every function
-        self._convertAlpha = {"A": 0, "a": 0, "B": 1, "b": 1, "C": 2,  "c": 2,
+        self._convertAlpha = {"A": 0, "a": 0, "B": 1, "b": 1, "C": 2, "c": 2,
                               "D": 3, "d": 3, "E": 4, "e": 4, "F": 5, "f": 5,
-                              "G": 6,"g": 6,"H": 7, "h": 7, "I": 8, "i": 8}
+                              "G": 6, "g": 6, "H": 7, "h": 7, "I": 8, "i": 8}
 
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
                             "7": 6, "8": 7, "9": 8, "10": 9}
@@ -95,8 +99,10 @@ class XiangqiGame:
         current_piece = self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]]
 
-        # make sure the space the piece is moving to is not holding one of their
-        # own pieces.
+        # make sure turn order is being followed
+        if current_piece.get_color().upper() != self._player_turn.upper():
+            print("It is not your turn")
+            return False
 
         # see if the move_to space is occupied
         if self._board[self._convertNum[move_to_coordinates[1:]]][
@@ -113,21 +119,41 @@ class XiangqiGame:
         # call the target pieces movement ability with the new coordinates
         # each piece contains it's own control flow to check if a move is valid
         # if the move is valid the pieces movement returns true and the piece is
-        # moved on the list.
-        if current_piece.movement(self, move_to_coordinates) == True:
+        # moved on the list. The names of the pieces determine how they are
+        # called. Some get the board passed to them so they can use check space.
+        # Others don't need it.
+        if current_piece.get_name() in ["General", "Soldier", "Advisor"]:
 
-            # moves the piece
-            self._board[self._convertNum[move_to_coordinates[1:]]][
-                self._convertAlpha[move_to_coordinates[0]]] = current_piece
+            # the movement for these three is only passed the
+            # move_to_coordinates
+            if current_piece.movement(move_to_coordinates) == True:
 
-            # the object has been moved in the list and we can change it's old
-            # position to an empty space.
-            self._board[self._convertNum[target_coordinates[1:]]][
-                self._convertAlpha[target_coordinates[0]]] = " "
-            return True
+                # if the movement is valid for the piece _move_completion is
+                # called which handles the actual movement of the piece within
+                # the board.
+                self._move_completion(target_coordinates, move_to_coordinates,
+                                      current_piece)
 
-        else:
-            return False
+            # if the move cannot be completed by the piece make_move() returns
+            # false.
+            else:
+                return False
+
+        if current_piece.get_name() in ["Chariot", "Cannon", "Elephant",
+                                        "Horse"]:
+            # the movement for these four is passed the board, and the
+            # move_to_coordinates
+            if current_piece.movement(self, move_to_coordinates) == True:
+
+                # if the movement is valid for the piece _move_completion is
+                # called which handles the actual movement of the piece within
+                # the board.
+                self._move_completion(target_coordinates, move_to_coordinates,
+                                      current_piece)
+            # if the move cannot be completed by the piece make_move() returns
+            # false.
+            else:
+                return False
 
     def display_character(self, target_coordinates):
         """
@@ -153,6 +179,36 @@ class XiangqiGame:
     def check_space(self, x_coord, y_coord):
         return self._board[y_coord][x_coord]
 
+    def display_player_turn(self):
+        print(self._player_turn)
+
+    def _move_completion(self, target_coordinates, move_to_coordinates,
+                        current_piece):
+        """
+        Method to move the piece within the list in memory. This should never be
+        called directly by the play as it would bypass validation. It will be
+        called by make_move() when necessary.
+        """
+
+        # moves the piece
+        self._board[self._convertNum[move_to_coordinates[1:]]][
+            self._convertAlpha[move_to_coordinates[0]]] = current_piece
+
+        # the object has been moved in the list and we can change it's old
+        # position to an empty space.
+        self._board[self._convertNum[target_coordinates[1:]]][
+            self._convertAlpha[target_coordinates[0]]] = " "
+
+        # change who's turn it is
+        if current_piece.get_color().lower() == 'red':
+            self._player_turn = 'black'
+        if current_piece.get_color().lower() == 'black':
+            self._player_turn = 'red'
+        return True
+
+
+
+
 
 class GamePieces:
     """
@@ -161,21 +217,22 @@ class GamePieces:
     """
 
     def __init__(self, color, location):
-
         self._color = color
 
         self._location = location
         # convert alpha contain both the lower and upper case because using
-        # .upper on all comparisons would've added more code to every function
-        self._convertAlpha = {"A": 0, "a": 0, "B": 1, "b": 1, "C": 2,  "c": 2,
+        # .upper() on all comparisons would've added more code
+        self._convertAlpha = {"A": 0, "a": 0, "B": 1, "b": 1, "C": 2, "c": 2,
                               "D": 3, "d": 3, "E": 4, "e": 4, "F": 5, "f": 5,
-                              "G": 6,"g": 6,"H": 7, "h": 7, "I": 8, "i": 8}
+                              "G": 6, "g": 6, "H": 7, "h": 7, "I": 8, "i": 8}
 
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
                             "7": 6, "8": 7, "9": 8, "10": 9}
 
+
     def get_color(self):
         return self._color
+
 
 
 class General(GamePieces):
@@ -189,7 +246,10 @@ class General(GamePieces):
         self._character = "師"
         super().__init__(color, location)
 
-    def movement(self, board, next_location):
+    def get_name(self):
+        return self._name
+
+    def movement(self, next_location):
         """
         This is the General's specific movement method. It will check to make
         sure that the input movement is allowed for the General.
@@ -302,7 +362,10 @@ class Soldier(GamePieces):
         self._character = "兵"
         super().__init__(color, location)
 
-    def movement(self, board, next_location):
+    def get_name(self):
+        return self._name
+
+    def movement(self, next_location):
 
         old_x = self._convertAlpha[self._location[0]]
         old_y = self._convertNum[self._location[1:]]
@@ -384,6 +447,9 @@ class Chariot(GamePieces):
         self._name = "Chariot"
         self._character = "車"
         super().__init__(color, location)
+
+    def get_name(self):
+        return self._name
 
     def movement(self, board, next_location):
 
@@ -495,6 +561,9 @@ class Cannon(GamePieces):
         self._character = "炮"
         super().__init__(color, location)
 
+    def get_name(self):
+        return self._name
+
     def movement(self, board, next_location):
 
         old_x = self._convertAlpha[self._location[0]]
@@ -536,7 +605,7 @@ class Cannon(GamePieces):
                     # we don't want to count the piece to be taken.
                     while space != new_y + 1:
                         space -= 1
-                        # the number of pieces inbetween are tracked by
+                        # the number of pieces in between are tracked by
                         # incrementing the piece_counter
                         if board.check_space(old_x, space) != " ":
                             piece_counter += 1
@@ -588,7 +657,7 @@ class Cannon(GamePieces):
                     # we don't want to count the piece to be taken.
                     while space != new_y - 1:
                         space += 1
-                        # the number of pieces inbetween are tracked by
+                        # the number of pieces in between are tracked by
                         # incrementing the piece_counter
                         if board.check_space(old_x, space) != " ":
                             piece_counter += 1
@@ -641,7 +710,7 @@ class Cannon(GamePieces):
                     # we don't want to count the piece to be taken.
                     while space != new_x - 1:
                         space += 1
-                        # the number of pieces inbetween are tracked by
+                        # the number of pieces in between are tracked by
                         # incrementing the piece_counter
                         if board.check_space(space, old_x) != " ":
                             piece_counter += 1
@@ -693,7 +762,7 @@ class Cannon(GamePieces):
                     # we don't want to count the piece to be taken.
                     while space != new_x + 1:
                         space -= 1
-                        # the number of pieces inbetween are tracked by
+                        # the number of pieces in between are tracked by
                         # incrementing the piece_counter
                         if board.check_space(space, old_y) != " ":
                             piece_counter += 1
@@ -723,7 +792,10 @@ class Advisor(GamePieces):
         self._character = "仕"
         super().__init__(color, location)
 
-    def movement(self, board, next_location):
+    def get_name(self):
+        return self._name
+
+    def movement(self, next_location):
         old_x = self._convertAlpha[self._location[0]]
         old_y = self._convertNum[self._location[1:]]
         new_x = self._convertAlpha[next_location[0]]
@@ -797,6 +869,9 @@ class Elephant(GamePieces):
         self._character = "相"
         super().__init__(color, location)
 
+    def get_name(self):
+        return self._name
+
     def movement(self, board, next_location):
         old_x = self._convertAlpha[self._location[0]]
         old_y = self._convertNum[self._location[1:]]
@@ -814,7 +889,7 @@ class Elephant(GamePieces):
                     # if the space is occupied the move cannot be completed
                     if board.check_space(old_x + 1, old_y - 1) != " ":
                         print("A piece is in your way, you cannot jump a "
-                             "piece")
+                              "piece")
                         return False
 
                     # if the space being moved into is occupied we track that
@@ -920,7 +995,7 @@ class Elephant(GamePieces):
                     # if the space is occupied the move cannot be completed
                     if board.check_space(old_x + 1, old_y - 1) != " ":
                         print("A piece is in your way, you cannot jump a "
-                             "piece")
+                              "piece")
                         return False
 
                     # if the space being moved into is occupied we track that
@@ -1022,6 +1097,9 @@ class Horse(GamePieces):
         self._character = "馬"
         super().__init__(color, location)
 
+    def get_name(self):
+        return self._name
+
     def movement(self, board, next_location):
         old_x = self._convertAlpha[self._location[0]]
         old_y = self._convertNum[self._location[1:]]
@@ -1114,7 +1192,7 @@ class Horse(GamePieces):
             else:
                 print("Not a valid move with the Horse")
                 return False
-            
+
         if old_x - 2 == new_x:
 
             # check the space one above the current location
@@ -1143,3 +1221,15 @@ class Horse(GamePieces):
                 print("Not a valid move with the Horse")
                 return False
 
+board1 = XiangqiGame()
+board1.display_board()
+board1.make_move("B10", "C8") # red's turn
+board1.display_player_turn()
+board1.make_move("B1", "C3") # blacks turn
+board1.display_board()
+board1.display_player_turn()
+board1.display_character("C3")
+board1.display_character("E10")
+board1.make_move("E10", "E9")
+board1.make_move("C3", "B1")
+board1.display_board()

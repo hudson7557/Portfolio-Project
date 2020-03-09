@@ -73,3 +73,20 @@ if self._color == "red":
                 self._location = next_location
                 print("Move completed")
                 return True
+
+
+                # moves the piece
+                self._board[self._convertNum[move_to_coordinates[1:]]][
+                    self._convertAlpha[move_to_coordinates[0]]] = current_piece
+
+                # the object has been moved in the list and we can change it's old
+                # position to an empty space.
+                self._board[self._convertNum[target_coordinates[1:]]][
+                    self._convertAlpha[target_coordinates[0]]] = " "
+
+                # change who's turn it is
+                if current_piece.get_color().lower() == 'red':
+                    self._player_turn = 'black'
+                if current_piece.get_color().lower() == 'black':
+                    self._player_turn = 'red'
+                return True
