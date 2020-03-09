@@ -149,3 +149,35 @@ board1.make_move("A5", "A1") # true, capturing the enemy
 board1.make_move("A1", "A8") # false, jumping two
 board1.display_board()
 """
+
+"""board1 = XiangqiGame()
+# for testing the red Advisors
+board1.make_move("D10", "E9") # moving up the board and to the right
+board1.make_move("E9", "F8")
+board1.make_move("F8", "E9") # moving down the board and to the left
+board1.make_move("E9", "D10")
+board1.make_move("F10", "E9") # moving up the board and to the left
+board1.make_move("E9", "D8")
+board1.make_move("D8", "C9") # false, out of the palace
+board1.make_move("D8", "D7") # false, not a diagonal move also OB
+board1.make_move("D8", "E8") # false, not a diagonal move
+board1.make_move("D8", "D9") # false, not a diagonal move
+board1.make_move("D8", "F10") # false, moving two spaces
+board1.make_move("D10", "E9")
+board1.make_move("E9", "D8")
+board1.make_move("E10", "E9")
+# for testing black advisors 
+board1.make_move("D1", "E2") # true, moving forward and to the right
+board1.make_move("E2", "F3") # true, moving forward and to the right
+board1.make_move("G4", "G5") # moving the soldier out of the way
+board1.make_move("F3", "G4") # false, ob
+board1.make_move("F3", "E2") # true, moving backwards and to the left
+board1.make_move("E2", "D1") # true, moving backwards and to the left
+board1.make_move("F1", "E2") # true, moving forwards and to the right
+board1.make_move("E2", "D3") # true, moving forwards and to the left
+board1.make_move("D3", "D4") # false, not diagonal
+board1.make_move("D3", "E2") # true, moving backwards and to the right
+board1.make_move("E2", "F1")  # true, moving backwards and to the right
+board1.make_move("F1", "G2") # false, ob
+board1.make_move("D1", "C2") # false, ob
+"""

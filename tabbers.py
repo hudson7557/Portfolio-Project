@@ -27,6 +27,20 @@ class general(game_pieces):
         print(old_x, old_y, new_x, new_y)
 
 
+if old_x - 1 == new_x and old_y - 1 == new_y:
+    if board.check_space(new_x, new_y) != " ":
+        if self.get_color() != \
+                board.check_space(new_x, new_y).get_color():
+            self._location = next_location
+            print("Piece taken")
+            return True
+        else:
+            print("Can't take your own piece!")
+            return False
+    else:
+        self._location = next_location
+        print("Moved homie")
+        return True
 
 general = general("black", "D9")
 general.display_character()

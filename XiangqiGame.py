@@ -15,7 +15,7 @@ class XiangqiGame:
         self._game_state = "UNFINISHED"
 
         self._board = [
-            [Chariot("black", "A1"), " ", " ", " ", General("black", "E1"), " ", " ", " ", Chariot("black", "I1")],
+            [Chariot("black", "A1"), " ", " ", Advisor("black", "D1"), General("black", "E1"), Advisor("black", "F1"), " ", " ", Chariot("black", "I1")],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
             [" ", Cannon("red", "B3"), " ", " ", " ", " ", " ", Cannon("red", "B8"), " "],
             [Soldier("black", "A4"), " ", Soldier("black", "C4"), " ",
@@ -28,13 +28,15 @@ class XiangqiGame:
              Soldier("red", "I7")],
             [" ", Cannon("red", "B8"), " ", " ", " ", " ", " ", Cannon("red", "H8"), " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [Chariot("red", "A10"), " ", " ", " ", General("red", "E10"), " ", " ", " " , Chariot("red", "I10")]]
+            [Chariot("red", "A10"), " ", " ", Advisor("red", "D10"), General("red", "E10"), Advisor("red", "F10"), " ", " " , Chariot("red", "I10")]]
 
         self._convertAlpha = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5,
                               "G": 6, "H": 7, "I": 8}
 
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
                             "7": 6, "8": 7, "9": 8, "10": 9}
+
+        self._player_turn = "red"
 
     def display_board(self):
         """
@@ -123,8 +125,11 @@ class XiangqiGame:
         """
         current_piece = self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]]
-        print(current_piece._color, current_piece._name,
-              current_piece._location, current_piece._character)
+        if current_piece == " ":
+            print("Space is empty.")
+        else:
+            print(current_piece._color, current_piece._name,
+                current_piece._location, current_piece._character)
 
     def get_game_state(self):
         """
@@ -153,7 +158,6 @@ class GamePieces:
 
     def get_color(self):
         return self._color
-
 
 class General(GamePieces):
     """
@@ -271,7 +275,6 @@ class General(GamePieces):
                 print("1")
                 return False
 
-
 class Soldier(GamePieces):
 
     def __init__(self, color, location):
@@ -353,7 +356,6 @@ class Soldier(GamePieces):
                 else:
                     print("Impossible")
                     return False
-
 
 class Chariot(GamePieces):
 
@@ -477,7 +479,6 @@ class Cannon(GamePieces):
         old_y = self._convertNum[self._location[1:]]
         new_x = self._convertAlpha[next_location[0]]
         new_y = self._convertNum[next_location[1:]]
-
 
         # moving forwards?
         if old_y > new_y and old_x == new_x:
@@ -636,7 +637,7 @@ class Cannon(GamePieces):
                 else:
                     print("That's your own piece")
                     return False
-
+        # moving left?
         if old_x > new_x and old_y == new_y:
             space = old_x
             piece_counter = 0
@@ -691,3 +692,77 @@ class Cannon(GamePieces):
         else:
             print("Because")
             return False
+
+class Advisor(GamePieces):
+
+    def __init__(self, color, location):
+        self._name = "Advisor"
+        self._character = "仕"
+        super().__init__(color, location)
+
+    def movement(self, board, next_location):
+        old_x = self._convertAlpha[self._location[0]]
+        old_y = self._convertNum[self._location[1:]]
+        new_x = self._convertAlpha[next_location[0]]
+        new_y = self._convertNum[next_location[1:]]
+
+        if self._color == "red":
+            # check to make sure the move to space is within the palace
+            if 7 <= new_y <= 9 and 3 <= new_x <= 5:
+                # if the piece is moving up & right
+                if old_x + 1 == new_x and old_y - 1 == new_y:
+                    self._location = next_location
+                    print("Moved completed")
+                    return True
+
+                # if the piece is moving down & right
+                if old_x + 1 == new_x and old_y + 1 == new_y:
+                    self._location = next_location
+                    print("Moved homie")
+                    return True
+                # if the piece is moving down & left
+                if old_x - 1 == new_x and old_y + 1 == new_y:
+                    self._location = next_location
+                    print("Moved homie")
+                    return True
+                # if the piece is moving up & left
+                if old_x - 1 == new_x and old_y - 1 == new_y:
+                    self._location = next_location
+                    print("Moved homie")
+                    return True
+                else:
+                    print("Not a valid move with the Advisor")
+            else:
+                print("OB")
+                return False
+
+        if self._color == "black":
+            # check to make sure the move to space is within the palace
+            if 0 <= new_y <= 2 and 3 <= new_x <= 5:
+                # if the piece is moving up & right
+                if old_x + 1 == new_x and old_y - 1 == new_y:
+                    self._location = next_location
+                    print("Moved completed")
+                    return True
+
+                # if the piece is moving down & right
+                if old_x + 1 == new_x and old_y + 1 == new_y:
+                    self._location = next_location
+                    print("Moved homie")
+                    return True
+                # if the piece is moving down & left
+                if old_x - 1 == new_x and old_y + 1 == new_y:
+                    self._location = next_location
+                    print("Moved homie")
+                    return True
+                # if the piece is moving up & left
+                if old_x - 1 == new_x and old_y - 1 == new_y:
+                    self._location = next_location
+                    print("Moved homie")
+                    return True
+                else:
+                    print("Not a valid move with the Advisor")
+            else:
+                print("OB")
+                return False
+
