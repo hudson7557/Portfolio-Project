@@ -36,8 +36,12 @@ class XiangqiGame:
              General("red", "E10"), Advisor("red", "F10"), Elephant("red", "G10"), Horse("red", "H10"),
              Chariot("red", "I10")]]
 
-        self._convertAlpha = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5,
-                              "G": 6, "H": 7, "I": 8}
+        # convert contains both the capital and lower case to allow for
+        # flexibility. It also allows us to not use .upper() on all comparisons
+        # which saves some code on every function
+        self._convertAlpha = {"A": 0, "a": 0, "B": 1, "b": 1, "C": 2,  "c": 2,
+                              "D": 3, "d": 3, "E": 4, "e": 4, "F": 5, "f": 5,
+                              "G": 6,"g": 6,"H": 7, "h": 7, "I": 8, "i": 8}
 
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
                             "7": 6, "8": 7, "9": 8, "10": 9}
@@ -157,11 +161,16 @@ class GamePieces:
     """
 
     def __init__(self, color, location):
+
         self._color = color
+
         self._location = location
-        self._convertAlpha = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5,
-                              "G": 6, "H": 7,
-                              "I": 8}  # used for coordinate translation
+        # convert alpha contain both the lower and upper case because using
+        # .upper on all comparisons would've added more code to every function
+        self._convertAlpha = {"A": 0, "a": 0, "B": 1, "b": 1, "C": 2,  "c": 2,
+                              "D": 3, "d": 3, "E": 4, "e": 4, "F": 5, "f": 5,
+                              "G": 6,"g": 6,"H": 7, "h": 7, "I": 8, "i": 8}
+
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
                             "7": 6, "8": 7, "9": 8, "10": 9}
 
@@ -1027,31 +1036,110 @@ class Horse(GamePieces):
                 print("A piece is in your way")
                 return False
 
-            # check to see if the space is occupied, since friendly fire is
-            # handled by make_move() we know that if it isn't empty it must be
-            # an opponents piece
-            if board.check_space(new_x, new_y) != " ":
-                print("Piece taken")
-                self._location = next_location
-                return True
+            # if the piece is moving back two on the y-axis, it can only move
+            # 1 left or right on the x_axis
+            if old_x - 1 == new_x or old_x + 1 == new_x:
 
-            # if the space is empty then it's just a simple movement.
+                # check to see if the space is occupied, since friendly fire is
+                # handled by make_move() we know that if it isn't empty it must
+                # be an opponents piece
+                if board.check_space(new_x, new_y) != " ":
+                    print("Piece taken")
+                    self._location = next_location
+                    return True
+
+                # if the space is empty then it's just a simple movement.
+                else:
+                    print("Move successful")
+                    self._location = next_location
+                    return True
             else:
-                print("Move successful")
-                self._location = next_location
-                return True
-        else:
-            print("hello")
+                print("Not a valid move with the Horse")
+                return False
 
-""" 
-       if old_y - 2 == new_y:
-        
+        # if the piece is moving backwards
+        if old_y + 2 == new_y:
+
+            # check the space one above the current location
+            if board.check_space(old_x, old_y + 1) != " ":
+                print("A piece is in your way")
+                return False
+
+            # if the piece is moving back two on the y-axis, it can only move
+            # 1 left or right on the x_axis
+            if old_x - 1 == new_x or old_x + 1 == new_x:
+
+                # check to see if the space is occupied, since friendly fire is
+                # handled by make_move() we know that if it isn't empty it must
+                # be an opponents piece
+                if board.check_space(new_x, new_y) != " ":
+                    print("Piece taken")
+                    self._location = next_location
+                    return True
+
+                # if the space is empty then it's just a simple movement.
+                else:
+                    print("Move successful")
+                    self._location = next_location
+                    return True
+            else:
+                print("Not a valid move with the Horse")
+                return False
+
+        # if the piece is moving right
         if old_x + 2 == new_x:
-            
-        if old_x - 2 == new_x: """
 
-#for testing horsies
-board1 = XiangqiGame()
-board1.display_board()
-board1.make_move("B10", "C8") # true, moved forward right
-board1.display_board()
+            # check the space one above the current location
+            if board.check_space(old_x + 1, old_y) != " ":
+                print("A piece is in your way")
+                return False
+
+            # if the piece is moving back two on the y-axis, it can only move
+            # 1 left or right on the x_axis
+            if old_y - 1 == new_y or old_y + 1 == new_y:
+
+                # check to see if the space is occupied, since friendly fire is
+                # handled by make_move() we know that if it isn't empty it must
+                # be an opponents piece
+                if board.check_space(new_x, new_y) != " ":
+                    print("Piece taken")
+                    self._location = next_location
+                    return True
+
+                # if the space is empty then it's just a simple movement.
+                else:
+                    print("Move successful")
+                    self._location = next_location
+                    return True
+            else:
+                print("Not a valid move with the Horse")
+                return False
+            
+        if old_x - 2 == new_x:
+
+            # check the space one above the current location
+            if board.check_space(old_x - 1, old_y) != " ":
+                print("A piece is in your way")
+                return False
+
+            # if the piece is moving back two on the y-axis, it can only move
+            # 1 left or right on the x_axis
+            if old_y - 1 == new_y or old_y + 1 == new_y:
+
+                # check to see if the space is occupied, since friendly fire is
+                # handled by make_move() we know that if it isn't empty it must
+                # be an opponents piece
+                if board.check_space(new_x, new_y) != " ":
+                    print("Piece taken")
+                    self._location = next_location
+                    return True
+
+                # if the space is empty then it's just a simple movement.
+                else:
+                    print("Move successful")
+                    self._location = next_location
+                    return True
+            else:
+                print("Not a valid move with the Horse")
+                return False
+

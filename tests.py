@@ -209,3 +209,32 @@ board1.make_move("G1", "E3") # true, moved backward left
 board1.make_move("I3", "G1") # true, moved forward, left
 board1.make_move("E3", "C1") # true, moved forward, left
 board1.display_board()"""
+
+"""#for testing horsies
+board1 = XiangqiGame()
+board1.display_board()
+board1.make_move("B10", "C8") # true, moved forward right
+board1.make_move("C8", "B10") # true, moved backwards left
+board1.make_move("B10", "A8") # true, moved forward left
+board1.make_move("A8", "B10") # true, moved backwards right
+board1.make_move("B10", "A8") # true, moved forwards left
+board1.make_move("A8", "B6") # false, soldier in the way
+board1.make_move("A8", "C8") # false, cannon in the way
+board1.make_move("H10", "F9") # false, elephant in the way
+board1.make_move("H10", "G8") # true, moved forward left
+board1.make_move("G8", "E9") # true, moved left and back
+board1.display_character("E9")
+board1.make_move("E9", "G8") # true, moved right and back
+board1.make_move("A8", "B10") # true, moved back and right
+board1.make_move("B10", "D9") # false, runs into elephant
+board1.make_move("B10", "C8") # true, move up right
+board1.make_move("C8", "E9") # true, moved right down
+board1.make_move("E9", "C8") # true, moved left and up
+board1.make_move("C8", "E7") # false, friendly fire
+board1.make_move("C8", "E8") # horizontal move
+board1.make_move("C8", "B10") # true, reset
+board1.make_move("B10", "D8") # false, invalid move
+board1.make_move("B10", "B9")
+board1.make_move("B1", "C3")
+board1.make_move("C3", "B1")
+board1.display_board()"""
