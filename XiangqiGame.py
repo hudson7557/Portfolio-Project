@@ -15,9 +15,12 @@ class XiangqiGame:
         self._game_state = "UNFINISHED"
 
         self._board = [
-            [Chariot("black", "A1"), " ", " ", Advisor("black", "D1"), General("black", "E1"), Advisor("black", "F1"), " ", " ", Chariot("black", "I1")],
+            [Chariot("black", "A1"), Horse("black", "B1"), Elephant("black", "C1"), Advisor("black", "D1"),
+             General("black", "E1"), Advisor("black", "F1"), Elephant("black", "G1"), Horse("black", "H1"),
+             Chariot("black", "I1")],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", Cannon("red", "B3"), " ", " ", " ", " ", " ", Cannon("red", "B8"), " "],
+            [" ", Cannon("red", "B3"), " ", " ", " ", " ", " ",
+             Cannon("red", "B8"), " "],
             [Soldier("black", "A4"), " ", Soldier("black", "C4"), " ",
              Soldier("black", "E4"), " ", Soldier("black", "G4"), " ",
              Soldier("black", "I4")],
@@ -26,9 +29,12 @@ class XiangqiGame:
             [Soldier("red", "A7"), " ", Soldier("red", "C7"), " ",
              Soldier("red", "E7"), " ", Soldier("red", "G7"), " ",
              Soldier("red", "I7")],
-            [" ", Cannon("red", "B8"), " ", " ", " ", " ", " ", Cannon("red", "H8"), " "],
+            [" ", Cannon("red", "B8"), " ", " ", " ", " ", " ",
+             Cannon("red", "H8"), " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [Chariot("red", "A10"), " ", " ", Advisor("red", "D10"), General("red", "E10"), Advisor("red", "F10"), " ", " " , Chariot("red", "I10")]]
+            [Chariot("red", "A10"), Horse("red", "B10"), Elephant("red", "C10"), Advisor("red", "D10"),
+             General("red", "E10"), Advisor("red", "F10"), Elephant("red", "G10"), Horse("red", "H10"),
+             Chariot("red", "I10")]]
 
         self._convertAlpha = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5,
                               "G": 6, "H": 7, "I": 8}
@@ -62,7 +68,7 @@ class XiangqiGame:
                 target_coordinates[1:] not in self._convertNum:
             print("inconceivable!")
             return
-
+        # if the move targets the same space the move is considered invalid
         if target_coordinates == move_to_coordinates:
             print("invalid move")
             return False
@@ -92,9 +98,11 @@ class XiangqiGame:
         if self._board[self._convertNum[move_to_coordinates[1:]]][
             self._convertAlpha[move_to_coordinates[0]]] != " ":
 
+            # if the space is occupied we check to make sure it is not a
+            # friendly piece in the space
             if current_piece.get_color() == self._board[self._convertNum[
                 move_to_coordinates[1:]]][self._convertAlpha[
-                    move_to_coordinates[0]]].get_color():
+                move_to_coordinates[0]]].get_color():
                 print("Samezies")
                 return False
 
@@ -129,7 +137,7 @@ class XiangqiGame:
             print("Space is empty.")
         else:
             print(current_piece._color, current_piece._name,
-                current_piece._location, current_piece._character)
+                  current_piece._location, current_piece._character)
 
     def get_game_state(self):
         """
@@ -152,12 +160,14 @@ class GamePieces:
         self._color = color
         self._location = location
         self._convertAlpha = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5,
-                              "G": 6, "H": 7, "I": 8}  # used for coordinate translation
+                              "G": 6, "H": 7,
+                              "I": 8}  # used for coordinate translation
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
                             "7": 6, "8": 7, "9": 8, "10": 9}
 
     def get_color(self):
         return self._color
+
 
 class General(GamePieces):
     """
@@ -275,6 +285,7 @@ class General(GamePieces):
                 print("1")
                 return False
 
+
 class Soldier(GamePieces):
 
     def __init__(self, color, location):
@@ -356,6 +367,7 @@ class Soldier(GamePieces):
                 else:
                     print("Impossible")
                     return False
+
 
 class Chariot(GamePieces):
 
@@ -466,6 +478,7 @@ class Chariot(GamePieces):
             print("False")
             return False
 
+
 class Cannon(GamePieces):
 
     def __init__(self, color, location):
@@ -508,7 +521,7 @@ class Cannon(GamePieces):
                 # first check the color, if they are different we check for a
                 # jump, if it's friendly we return false.
                 if board.check_space(new_x, new_y).get_color() != \
-                    self.get_color():
+                        self.get_color():
                     # while loop checks to see how many pieces are in between
                     # the start and end (A to B) we take 1 off the new_y because
                     # we don't want to count the piece to be taken.
@@ -560,7 +573,7 @@ class Cannon(GamePieces):
                 # first check the color, if they are different we check for a
                 # jump, if it's friendly we return false.
                 if board.check_space(new_x, new_y).get_color() != \
-                    self.get_color():
+                        self.get_color():
                     # while loop checks to see how many pieces are in between
                     # the start and end (A to B) we take 1 off the new_y because
                     # we don't want to count the piece to be taken.
@@ -613,7 +626,7 @@ class Cannon(GamePieces):
                 # first check the color, if they are different we check for a
                 # jump, if it's friendly we return false.
                 if board.check_space(new_x, new_y).get_color() != \
-                    self.get_color():
+                        self.get_color():
                     # while loop checks to see how many pieces are in between
                     # the start and end (A to B) we take 1 off the new_y because
                     # we don't want to count the piece to be taken.
@@ -665,7 +678,7 @@ class Cannon(GamePieces):
                 # first check the color, if they are different we check for a
                 # jump, if it's friendly we return false.
                 if board.check_space(new_x, new_y).get_color() != \
-                    self.get_color():
+                        self.get_color():
                     # while loop checks to see how many pieces are in between
                     # the start and end (A to B) we take 1 off the new_y because
                     # we don't want to count the piece to be taken.
@@ -692,6 +705,7 @@ class Cannon(GamePieces):
         else:
             print("Because")
             return False
+
 
 class Advisor(GamePieces):
 
@@ -766,3 +780,278 @@ class Advisor(GamePieces):
                 print("OB")
                 return False
 
+
+class Elephant(GamePieces):
+
+    def __init__(self, color, location):
+        self._name = "Elephant"
+        self._character = "相"
+        super().__init__(color, location)
+
+    def movement(self, board, next_location):
+        old_x = self._convertAlpha[self._location[0]]
+        old_y = self._convertNum[self._location[1:]]
+        new_x = self._convertAlpha[next_location[0]]
+        new_y = self._convertNum[next_location[1:]]
+
+        if self._color == "red":
+
+            # check to make sure the move to space is on the red side
+            if 5 <= new_y <= 9:
+
+                # if the piece is moving up & right
+                if old_x + 2 == new_x and old_y - 2 == new_y:
+
+                    # if the space is occupied the move cannot be completed
+                    if board.check_space(old_x + 1, old_y - 1) != " ":
+                        print("A piece is in your way, you cannot jump a "
+                             "piece")
+                        return False
+
+                    # if the space being moved into is occupied we track that
+                    # a piece was taken
+                    if board.check_space(new_x, new_y) != " ":
+                        self._location = next_location
+                        print("piece taken")
+                        return True
+
+                    # if the space is not occupied it's just a movement
+                    else:
+                        self._location = next_location
+                        print("Move completed")
+                        return True
+
+                # if the piece is moving up & left
+                if old_x - 2 == new_x and old_y - 2 == new_y:
+
+                    # if the space is occupied the move cannot be completed
+                    if board.check_space(old_x - 1, old_y - 1) != " ":
+                        print(
+                            "A piece is in your way, you cannot jump a "
+                            "piece")
+                        return False
+
+                    # if the space being moved into is occupied we track that
+                    # a piece was taken
+                    if board.check_space(new_x, new_y) != " ":
+                        self._location = next_location
+                        print("piece taken")
+                        return True
+
+                    # if the space is not occupied it's just a movement
+                    else:
+                        self._location = next_location
+                        print("Move completed")
+                        return True
+
+                # if the piece is moving down & right
+                if old_x + 2 == new_x and old_y + 2 == new_y:
+
+                    # if the space is occupied the move cannot be completed
+                    if board.check_space(old_x + 1, old_y + 1) != " ":
+                        print(
+                            "A piece is in your way, you cannot jump a "
+                            "piece")
+                        return False
+
+                    # if the space being moved into is occupied we track that
+                    # a piece was taken
+                    if board.check_space(new_x, new_y) != " ":
+                        self._location = next_location
+                        print("piece taken")
+                        return True
+
+                    # if the space is not occupied it's just a movement
+                    else:
+                        self._location = next_location
+                        print("Move completed")
+                        return True
+
+                # if the piece is moving down & left
+                if old_x - 2 == new_x and old_y + 2 == new_y:
+
+                    # if the space is occupied the move cannot be completed
+                    if board.check_space(old_x - 1, old_y + 1) != " ":
+                        print(
+                            "A piece is in your way, you cannot jump a "
+                            "piece")
+                        return False
+
+                    # if the space being moved into is occupied we track that
+                    # a piece was taken
+                    if board.check_space(new_x, new_y) != " ":
+                        self._location = next_location
+                        print("piece taken")
+                        return True
+
+                    # if the space is not occupied it's just a movement
+                    else:
+                        self._location = next_location
+                        print("Move completed")
+                        return True
+
+                # not a valid diagonal move
+                else:
+                    print("Not a 2 space diagonal move")
+                    return False
+
+            # out of bounds
+            else:
+                print("Out of bounds for the Red Elephants")
+                return False
+
+        if self._color == "black":
+
+            # check to make sure the move to space is on the red side
+            if 0 <= new_y <= 4:
+
+                # if the piece is moving up & right
+                if old_x + 2 == new_x and old_y - 2 == new_y:
+
+                    # if the space is occupied the move cannot be completed
+                    if board.check_space(old_x + 1, old_y - 1) != " ":
+                        print("A piece is in your way, you cannot jump a "
+                             "piece")
+                        return False
+
+                    # if the space being moved into is occupied we track that
+                    # a piece was taken
+                    if board.check_space(new_x, new_y) != " ":
+                        self._location = next_location
+                        print("piece taken")
+                        return True
+
+                    # if the space is not occupied it's just a movement
+                    else:
+                        self._location = next_location
+                        print("Move completed")
+                        return True
+
+                # if the piece is moving up & left
+                if old_x - 2 == new_x and old_y - 2 == new_y:
+
+                    # if the space is occupied the move cannot be completed
+                    if board.check_space(old_x - 1, old_y - 1) != " ":
+                        print(
+                            "A piece is in your way, you cannot jump a "
+                            "piece")
+                        return False
+
+                    # if the space being moved into is occupied we track that
+                    # a piece was taken
+                    if board.check_space(new_x, new_y) != " ":
+                        self._location = next_location
+                        print("piece taken")
+                        return True
+
+                    # if the space is not occupied it's just a movement
+                    else:
+                        self._location = next_location
+                        print("Move completed")
+                        return True
+
+                # if the piece is moving down & right
+                if old_x + 2 == new_x and old_y + 2 == new_y:
+
+                    # if the space is occupied the move cannot be completed
+                    if board.check_space(old_x + 1, old_y + 1) != " ":
+                        print(
+                            "A piece is in your way, you cannot jump a "
+                            "piece")
+                        return False
+
+                    # if the space being moved into is occupied we track that
+                    # a piece was taken
+                    if board.check_space(new_x, new_y) != " ":
+                        self._location = next_location
+                        print("piece taken")
+                        return True
+
+                    # if the space is not occupied it's just a movement
+                    else:
+                        self._location = next_location
+                        print("Move completed")
+                        return True
+
+                # if the piece is moving down & left
+                if old_x - 2 == new_x and old_y + 2 == new_y:
+
+                    # if the space is occupied the move cannot be completed
+                    if board.check_space(old_x - 1, old_y + 1) != " ":
+                        print(
+                            "A piece is in your way, you cannot jump a "
+                            "piece")
+                        return False
+
+                    # if the space being moved into is occupied we track that
+                    # a piece was taken
+                    if board.check_space(new_x, new_y) != " ":
+                        self._location = next_location
+                        print("piece taken")
+                        return True
+
+                    # if the space is not occupied it's just a movement
+                    else:
+                        self._location = next_location
+                        print("Move completed")
+                        return True
+
+                # not a valid diagonal move
+                else:
+                    print("Not a 2 space diagonal move")
+                    return False
+
+            # out of bounds
+            else:
+                print("Out of bounds for Black Elephants")
+                return False
+
+
+class Horse(GamePieces):
+    def __init__(self, color, location):
+        self._name = "Horse"
+        self._character = "馬"
+        super().__init__(color, location)
+
+    def movement(self, board, next_location):
+        old_x = self._convertAlpha[self._location[0]]
+        old_y = self._convertNum[self._location[1:]]
+        new_x = self._convertAlpha[next_location[0]]
+        new_y = self._convertNum[next_location[1:]]
+
+        # if the piece is moving forward
+        if old_y - 2 == new_y:
+
+            # check the space one above the current location
+            if board.check_space(old_x, old_y - 1) != " ":
+                print("A piece is in your way")
+                return False
+
+            # check to see if the space is occupied, since friendly fire is
+            # handled by make_move() we know that if it isn't empty it must be
+            # an opponents piece
+            if board.check_space(new_x, new_y) != " ":
+                print("Piece taken")
+                self._location = next_location
+                return True
+
+            # if the space is empty then it's just a simple movement.
+            else:
+                print("Move successful")
+                self._location = next_location
+                return True
+        else:
+            print("hello")
+
+""" 
+       if old_y - 2 == new_y:
+        
+        if old_x + 2 == new_x:
+            
+        if old_x - 2 == new_x: """
+
+#for testing horsies
+board1 = XiangqiGame()
+board1.display_board()
+board1.make_move("B10", "C8") # true, moved forward right
+board1.display_board()

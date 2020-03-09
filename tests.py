@@ -181,3 +181,31 @@ board1.make_move("E2", "F1")  # true, moving backwards and to the right
 board1.make_move("F1", "G2") # false, ob
 board1.make_move("D1", "C2") # false, ob
 """
+
+"""#for testing elephants 
+board1 = XiangqiGame()
+board1.display_board()
+# For testing red elephants
+board1.make_move("C10", "E8") # true, moved forward right
+board1.make_move("E8", "C6") # true, moved forward left
+board1.make_move("G10", "I12") # false, ob
+board1.make_move("G10", "E8") # true, moved forward left
+board1.make_move("E8", "G6") # true, moved forward right
+board1.make_move("G6", "C4") # false, crossing the river
+board1.make_move("G6", "I8") # true, moved back right
+board1.make_move("C6", "A8") # true, move back left
+board1.make_move("A8", "C10") # true, moved back right
+board1.make_move("I8", "G10") # true, moved back left
+# For testing black elephants
+print("BREAK TO BLACK PIECE TESTING")
+board1.make_move("C1", "E3") # true, moved backwards right
+board1.make_move("E3", "G5") # true, moved forward right
+board1.display_character("G5")
+board1.make_move("G5", "I7") # false, OB
+board1.make_move("G5", "I3") # true, moved forwards right
+board1.make_move("I3", "I2") # false, horizontal move
+board1.make_move("I3", "H2") # false, one space diagonal move
+board1.make_move("G1", "E3") # true, moved backward left
+board1.make_move("I3", "G1") # true, moved forward, left
+board1.make_move("E3", "C1") # true, moved forward, left
+board1.display_board()"""

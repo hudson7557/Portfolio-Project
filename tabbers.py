@@ -45,3 +45,31 @@ if old_x - 1 == new_x and old_y - 1 == new_y:
 general = general("black", "D9")
 general.display_character()
 general.movement("E9")
+
+if self._color == "red":
+    # check to make sure the move to space is on the red side
+    if 5 <= new_y <= 9:
+        # if the piece is moving up & right
+        if old_x + 2 == new_x and old_y - 2 == new_y:
+            space = old_x
+            expanse = old_y
+            # check if the space in between the start and end point is
+            # occupied.
+            space += 1
+            expanse -= 1
+            # if the space is occupied the move cannot be completed
+            if board.check_space(space, expanse) != " ":
+                print("A piece is in your way, you cannot jump a "
+                      "piece")
+                return False
+            # if the space being moved into is occupied we track that
+            # a piece was taken
+            if board1.check_space(new_x, new_y) != " ":
+                self._location = next_location
+                print("piece taken")
+                return True
+            # if the space is not occupied it's just a movement
+            else:
+                self._location = next_location
+                print("Move completed")
+                return True
