@@ -57,9 +57,13 @@ class XiangqiGame:
 
         self._red_check = False
 
-        self._red_piece_list = [piece for sublist in self._board for piece in sublist if piece != " " if piece.get_color() == "red"]
+        self._red_piece_list = [piece for list_1 in self._board for piece in
+                                list_1 if piece != " " if piece.get_color()
+                                == "red"]
 
-        self._black_piece_list = [piece for sublist in self._board for piece in sublist if piece != " " if piece.get_color() == "black"]
+        self._black_piece_list = [piece for list_1 in self._board for piece in
+                                  list_1 if piece != " " if piece.get_color()
+                                  == "black"]
 
     def display_board(self):
         """
