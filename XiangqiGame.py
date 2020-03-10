@@ -3,6 +3,7 @@
 # Description: This is the Xiangqi game program which contains multiple classes
 # for playing the game Xiangqi, also known as Chinese chess.
 
+
 class XiangqiGame:
 
     def __init__(self):
@@ -56,19 +57,24 @@ class XiangqiGame:
 
         self._red_check = False
 
+        self._red_piece_list = [piece for sublist in self._board for piece in sublist if piece != " " if piece.get_color() == "red"]
+
+        self._black_piece_list = [piece for sublist in self._board for piece in sublist if piece != " " if piece.get_color() == "black"]
+
     def display_board(self):
         """
         Method for displaying the targeted Xiangqi board
         """
+
         for line in self._board:
             print(line)
 
     def make_move(self, target_coordinates, move_to_coordinates):
         """
-        This method checks to make sure the move is targeting valid coordinates.
-        Once it knows the coordinates are valid it will call the target objects
-        movement method and see's if the result is True. If the result is True
-        it moves the pieces and returns True.
+        This method handles general movement validation for a piece. If checks
+        all the precondition to make sure the move is potentially valid, then
+        calls a pieces specific movement to see if the move is valid for that
+        piece. If the move is valid _complete_move is called.
         :param target_coordinates: string of coordinates
         :param move_to_coordinates: string of coordinates
         :return: True of False
@@ -141,10 +147,9 @@ class XiangqiGame:
 
                 # check to see if the space being moved to is empty
                 if targeted_space == " ":
-
                     # if the movement is valid for the piece _move_completion is
-                    # called which handles the actual movement of the piece within
-                    # the board.
+                    # called which handles the actual movement of the piece
+                    # within the board.
                     self._move_completion(target_coordinates,
                                           move_to_coordinates,
                                           current_piece)
@@ -177,23 +182,23 @@ class XiangqiGame:
 
                     return True
 
-
             # if the move cannot be completed by the piece make_move() returns
             # false.
             else:
                 return False
-
+        # same as above, pieces with the names in the list have the board passed
+        # to them in order to make specific checks or moves.
         if current_piece.get_name() in ["General", "Chariot", "Cannon",
                                         "Elephant", "Horse"]:
 
+            # if the movement is possible
             if current_piece.movement(self, move_to_coordinates) == True:
 
                 # check to see if the space being moved to is empty
                 if targeted_space == " ":
-
                     # if the movement is valid for the piece _move_completion is
-                    # called which handles the actual movement of the piece within
-                    # the board.
+                    # called which handles the actual movement of the piece
+                    # within the board.
                     self._move_completion(target_coordinates,
                                           move_to_coordinates,
                                           current_piece)
@@ -228,14 +233,18 @@ class XiangqiGame:
 
     def display_character(self, target_coordinates):
         """
+        DELETE - ACCESSES DATA MEMBERS IT SHOULDN'T
         Method to display a piece on the board. Used primarily for checking to
         see if a piece was created accurately.
         :param target_coordinates: coordinates of the target piece
         """
         current_piece = self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]]
+
+        # if the space is empty it will print a statement letting us know
         if current_piece == " ":
             print("Space is empty.")
+        # if the space is not empty it prints some of the pieces data
         else:
             print(current_piece._color, current_piece._name,
                   current_piece._location, current_piece._character)
@@ -244,16 +253,26 @@ class XiangqiGame:
         """
         Method allowing users to check the current state of the game.
         """
+
         return self._game_state
 
     def check_space(self, x_coord, y_coord):
+        """
+        Method which allows the program, to check the contents of a space.
+        Coordinates must be converted by convertNum and convertAlpha.
+        """
+
         return self._board[y_coord][x_coord]
 
     def display_player_turn(self):
+        """
+        Method used to check who's turn it is.
+        """
+
         print(self._player_turn)
 
     def _move_completion(self, target_coordinates, move_to_coordinates,
-                        current_piece):
+                         current_piece):
         """
         Method to move the piece within the list in memory. This should never be
         called directly by the player as it would bypass validation. It will be
@@ -275,6 +294,7 @@ class XiangqiGame:
 
         if current_piece.get_color().lower() == 'black':
             self._player_turn = 'red'
+
         return True
 
     def is_in_check(self, color):
@@ -296,6 +316,21 @@ class XiangqiGame:
         else:
             return "Color must be red or black."
 
+    def show_list(self, color):
+
+        if color.lower() == "black":
+            num = 1
+            for piece in self._black_piece_list:
+                print(num, piece.get_name(), piece.get_color(),
+                      piece.get_location())
+                num +=1
+
+        if color.lower() == "red":
+            num = 1
+            for piece in self._red_piece_list:
+                print(num, piece.get_name(), piece.get_color(),
+                      piece.get_location())
+                num += 1
 
 class GamePieces:
     """
@@ -304,22 +339,36 @@ class GamePieces:
     """
 
     def __init__(self, color, location):
+        """
+        A method used as a super() to initialize pieces. Every piece has it's
+        own convertAlpha, convertNum, color, and location data members.
+        :param color:
+        :param location:
+        """
+
         self._color = color
 
         self._location = location
-        # convert alpha contain both the lower and upper case because using
+
+        # convert alpha contains both the lower and upper case because using
         # .upper() on all comparisons would've added more code
         self._convertAlpha = {"A": 0, "a": 0, "B": 1, "b": 1, "C": 2, "c": 2,
                               "D": 3, "d": 3, "E": 4, "e": 4, "F": 5, "f": 5,
                               "G": 6, "g": 6, "H": 7, "h": 7, "I": 8, "i": 8}
 
+        # converts the string number to the correct integer.
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
                             "7": 6, "8": 7, "9": 8, "10": 9}
 
-
     def get_color(self):
+        """
+        Method used to return a pieces color
+        :return:
+        """
         return self._color
 
+    def get_location(self):
+        return self._location
 
 
 class General(GamePieces):
@@ -340,6 +389,7 @@ class General(GamePieces):
         """
         This is the General's specific movement method. It will check to make
         sure that the input movement is allowed for the General.
+        :param board: the current board object
         :param next_location: the spot the General is moving to.
         :return: True or False
         """
@@ -479,11 +529,9 @@ class General(GamePieces):
                     else:
                         return True
 
-
                 else:
                     print("2")
                     return False
-
 
             else:
                 print("1")
@@ -1356,12 +1404,6 @@ class Horse(GamePieces):
                 print("Not a valid move with the Horse")
                 return False
 
-
 game = XiangqiGame()
-game.display_board()
-game.make_move("B8", "A8")
-print(game.get_game_state())
-game.make_move("A4", "A5")
-game.make_move("A8", "A5")
-game.display_board()
-print(game.get_game_state())
+game.show_list('red')
+game.show_list('black')

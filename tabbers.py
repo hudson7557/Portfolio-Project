@@ -1,4 +1,4 @@
-class game_pieces:
+"""class game_pieces:
 
     def __init__(self, color, location):
         self._color = color
@@ -143,3 +143,4 @@ if self._color == "red":
             # false.
             else:
                 return False
+"""

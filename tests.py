@@ -296,3 +296,23 @@ game.display_board()
              Chariot("red", "I10")]]
 
              """
+
+"""
+# testing movements and game complete check
+game = XiangqiGame()
+game.display_board()
+game.make_move("B8", "A8")
+print(game.get_game_state())
+game.make_move("A4", "A5")
+game.make_move("A8", "A5")
+game.make_move("E1", "E2")
+game.make_move("A5", "D5")
+game.make_move("E2", "D2")
+print("HI")
+game.make_move("A7", "A6")
+game.make_move("B3", "D3")
+game.make_move("D5", "D2")
+game.display_board()
+print(game.get_game_state())
+game.make_move("A1", "A2")
+"""
