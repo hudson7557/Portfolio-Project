@@ -22,15 +22,11 @@ class XiangqiGame:
              Chariot("black", "I1")],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
             [" ", Cannon("red", "B3"), " ", " ", " ", " ", " ",
-             Cannon("red", "B8"), " "],
-            [Soldier("black", "A4"), " ", Soldier("black", "C4"), " ",
-             Soldier("black", "E4"), " ", Soldier("black", "G4"), " ",
-             Soldier("black", "I4")],
+             Cannon("red", "H3"), " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [Soldier("red", "A7"), " ", Soldier("red", "C7"), " ",
-             Soldier("red", "E7"), " ", Soldier("red", "G7"), " ",
-             Soldier("red", "I7")],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
             [" ", Cannon("red", "B8"), " ", " ", " ", " ", " ",
              Cannon("red", "H8"), " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -52,6 +48,10 @@ class XiangqiGame:
 
         self._player_turn = "red"
 
+        self._black_check = False
+
+        self._red_check = False
+
     def display_board(self):
         """
         Method for displaying the targeted Xiangqi board
@@ -70,12 +70,17 @@ class XiangqiGame:
         :return: True of False
         """
 
+        # check to make sure the game is still active, that is no one has won
+        if self._game_state != "UNFINISHED":
+            return False
+
         # make sure the move is targeting a piece on the board using the
         # dictionaries to check if the string is valid or not.
         if target_coordinates[0] not in self._convertAlpha or \
                 target_coordinates[1:] not in self._convertNum:
             print("inconceivable!")
-            return
+            return False
+
         # if the move targets the same space the move is considered invalid
         if target_coordinates == move_to_coordinates:
             print("invalid move")
@@ -85,14 +90,14 @@ class XiangqiGame:
         if self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]] == " ":
             print("No valid piece in location")
-            return
+            return False
 
         # make sure the coordinates being moved to are on the board using the
         # dictionaries to check if the string is valid or not.
         if move_to_coordinates[0] not in self._convertAlpha or \
                 move_to_coordinates[1:] not in self._convertNum:
             print("Nah dog")
-            return
+            return False
 
         # make sure the move_to_coordinates are on the board.
         # get the target pieces object
@@ -122,11 +127,21 @@ class XiangqiGame:
         # moved on the list. The names of the pieces determine how they are
         # called. Some get the board passed to them so they can use check space.
         # Others don't need it.
-        if current_piece.get_name() in ["General", "Soldier", "Advisor"]:
+        if current_piece.get_name() in ["Soldier", "Advisor"]:
 
             # the movement for these three is only passed the
             # move_to_coordinates
             if current_piece.movement(move_to_coordinates) == True:
+
+                # check to see if the general is the piece being taken
+                if self._board[self._convertNum[
+                move_to_coordinates[1:]]][self._convertAlpha[
+                move_to_coordinates[0]]].get_name() == "General":
+
+                    # the game state is changed to reflect which ever color took
+                    # a general has won
+                    self._game_state = current_piece.get_color().upper() + \
+                                       "_WON"
 
                 # if the movement is valid for the piece _move_completion is
                 # called which handles the actual movement of the piece within
@@ -139,11 +154,21 @@ class XiangqiGame:
             else:
                 return False
 
-        if current_piece.get_name() in ["Chariot", "Cannon", "Elephant",
-                                        "Horse"]:
+        if current_piece.get_name() in ["General", "Chariot", "Cannon",
+                                        "Elephant", "Horse"]:
             # the movement for these four is passed the board, and the
             # move_to_coordinates
             if current_piece.movement(self, move_to_coordinates) == True:
+
+                # check to see if the general is the piece being taken
+                if self._board[self._convertNum[
+                move_to_coordinates[1:]]][self._convertAlpha[
+                move_to_coordinates[0]]].get_name() == "General":
+
+                    # the game state is changed to reflect which ever color took
+                    # a general has won
+                    self._game_state = current_piece.get_color().upper() + \
+                                       "_WON"
 
                 # if the movement is valid for the piece _move_completion is
                 # called which handles the actual movement of the piece within
@@ -172,7 +197,6 @@ class XiangqiGame:
     def get_game_state(self):
         """
         Method allowing users to check the current state of the game.
-        :return:
         """
         return self._game_state
 
@@ -186,8 +210,8 @@ class XiangqiGame:
                         current_piece):
         """
         Method to move the piece within the list in memory. This should never be
-        called directly by the play as it would bypass validation. It will be
-        called by make_move() when necessary.
+        called directly by the player as it would bypass validation. It will be
+        called by make_move() when necessary. So no touchy.
         """
 
         # moves the piece
@@ -202,10 +226,29 @@ class XiangqiGame:
         # change who's turn it is
         if current_piece.get_color().lower() == 'red':
             self._player_turn = 'black'
+
         if current_piece.get_color().lower() == 'black':
             self._player_turn = 'red'
         return True
 
+    def is_in_check(self, color):
+        """
+        A method used to check whether a color is in check.
+        :param color: "red" or "black"
+        :return: a True or False value for black or red being in check
+        """
+
+        # if the user types in black
+        if color.lower() == "black":
+            return self._black_check
+
+        # if the user types in red
+        if color.lower() == "red":
+            return self._red_check
+
+        # if the color was not red or black
+        else:
+            return "Color must be red or black."
 
 
 
@@ -249,7 +292,7 @@ class General(GamePieces):
     def get_name(self):
         return self._name
 
-    def movement(self, next_location):
+    def movement(self, board, next_location):
         """
         This is the General's specific movement method. It will check to make
         sure that the input movement is allowed for the General.
@@ -299,6 +342,28 @@ class General(GamePieces):
                     else:
                         print("3")
                         return False
+
+                # the red Generals flying general move
+                # if we are targeting the general on the other side.
+                if board.check_space(new_x, new_y).get_name() == "General":
+
+                    space = old_y
+                    # we iterate through the board on the y_axis to check for
+                    # whether the generals can actually see each other. Since we
+                    # already know new_y would be the target generals y_coord we
+                    # check just up to the general.
+                    while space != new_y + 1:
+                        space -= 1
+
+                        # if something is in the way we return false.
+                        if board.check_space(old_x, space) != " ":
+                            print("A piece is in the way of this move")
+                            return False
+
+                    # if nothing is in the way the move goes through.
+                    else:
+                        return True
+
                 else:
                     print("2")
                     return False
@@ -346,9 +411,35 @@ class General(GamePieces):
                     else:
                         print("3")
                         return False
+
+                # the black Generals flying general move
+                # if we are targeting the general on the other side.
+                if board.check_space(new_x, new_y).get_name() == "General":
+
+                    space = old_y
+
+                    # we iterate through the board on the y_axis to check for
+                    # whether the generals can actually see each other. Since we
+                    # already know new_y would be the target generals y_coord we
+                    # check just up to the general.
+                    while space != new_y - 1:
+
+                        space += 1
+
+                        # if something is in the way we return false.
+                        if board.check_space(old_x, space) != " ":
+                            print("A piece is in the way of this move")
+                            return False
+
+                    # if nothing is in the way the move goes through.
+                    else:
+                        return True
+
+
                 else:
                     print("2")
                     return False
+
 
             else:
                 print("1")
@@ -1221,15 +1312,10 @@ class Horse(GamePieces):
                 print("Not a valid move with the Horse")
                 return False
 
-board1 = XiangqiGame()
-board1.display_board()
-board1.make_move("B10", "C8") # red's turn
-board1.display_player_turn()
-board1.make_move("B1", "C3") # blacks turn
-board1.display_board()
-board1.display_player_turn()
-board1.display_character("C3")
-board1.display_character("E10")
-board1.make_move("E10", "E9")
-board1.make_move("C3", "B1")
-board1.display_board()
+
+game = XiangqiGame()
+game.display_board()
+game.make_move("E10", "E9")
+print(game.get_game_state())
+game.make_move("E1", "E9")
+print(game.get)

@@ -90,3 +90,29 @@ if self._color == "red":
                 if current_piece.get_color().lower() == 'black':
                     self._player_turn = 'red'
                 return True
+
+        self._board = [
+            [Chariot("black", "A1"), Horse("black", "B1"),
+             Elephant("black", "C1"), Advisor("black", "D1"),
+             General("black", "E1"), Advisor("black", "F1"),
+             Elephant("black", "G1"), Horse("black", "H1"),
+             Chariot("black", "I1")],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", Cannon("red", "B3"), " ", " ", " ", " ", " ",
+             Cannon("red", "H3"), " "],
+            [Soldier("black", "A4"), " ", Soldier("black", "C4"), " ",
+             Soldier("black", "E4"), " ", Soldier("black", "G4"), " ",
+             Soldier("black", "I4")],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [Soldier("red", "A7"), " ", Soldier("red", "C7"), " ",
+             Soldier("red", "E7"), " ", Soldier("red", "G7"), " ",
+             Soldier("red", "I7")],
+            [" ", Cannon("red", "B8"), " ", " ", " ", " ", " ",
+             Cannon("red", "H8"), " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [Chariot("red", "A10"), Horse("red", "B10"), Elephant("red", "C10"),
+             Advisor("red", "D10"),
+             General("red", "E10"), Advisor("red", "F10"),
+             Elephant("red", "G10"), Horse("red", "H10"),
+             Chariot("red", "I10")]]
