@@ -1315,7 +1315,5 @@ class Horse(GamePieces):
 
 game = XiangqiGame()
 game.display_board()
-game.make_move("E10", "E9")
+game.make_move("E10", "E1")
 print(game.get_game_state())
-game.make_move("E1", "E9")
-print(game.get)
