@@ -98,8 +98,8 @@ if self._color == "red":
              Elephant("black", "G1"), Horse("black", "H1"),
              Chariot("black", "I1")],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", Cannon("red", "B3"), " ", " ", " ", " ", " ",
-             Cannon("red", "H3"), " "],
+            [" ", Cannon("black", "B3"), " ", " ", " ", " ", " ",
+             Cannon("black", "H3"), " "],
             [Soldier("black", "A4"), " ", Soldier("black", "C4"), " ",
              Soldier("black", "E4"), " ", Soldier("black", "G4"), " ",
              Soldier("black", "I4")],
@@ -116,3 +116,30 @@ if self._color == "red":
              General("red", "E10"), Advisor("red", "F10"),
              Elephant("red", "G10"), Horse("red", "H10"),
              Chariot("red", "I10")]]
+
+
+        if current_piece.get_name() in ["General", "Chariot", "Cannon",
+                                        "Elephant", "Horse"]:
+            # the movement for these four is passed the board, and the
+            # move_to_coordinates
+            if current_piece.movement(self, move_to_coordinates) == True:
+
+                # check to see if the general is the piece being taken
+                if self._board[self._convertNum[
+                move_to_coordinates[1:]]][self._convertAlpha[
+                move_to_coordinates[0]]].get_name() == "General":
+
+                    # the game state is changed to reflect which ever color took
+                    # a general has won
+                    self._game_state = current_piece.get_color().upper() + \
+                                       "_WON"
+
+                # if the movement is valid for the piece _move_completion is
+                # called which handles the actual movement of the piece within
+                # the board.
+                self._move_completion(target_coordinates, move_to_coordinates,
+                                      current_piece)
+            # if the move cannot be completed by the piece make_move() returns
+            # false.
+            else:
+                return False

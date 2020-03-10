@@ -21,12 +21,16 @@ class XiangqiGame:
              Elephant("black", "G1"), Horse("black", "H1"),
              Chariot("black", "I1")],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", Cannon("red", "B3"), " ", " ", " ", " ", " ",
-             Cannon("red", "H3"), " "],
+            [" ", Cannon("black", "B3"), " ", " ", " ", " ", " ",
+             Cannon("black", "H3"), " "],
+            [Soldier("black", "A4"), " ", Soldier("black", "C4"), " ",
+             Soldier("black", "E4"), " ", Soldier("black", "G4"), " ",
+             Soldier("black", "I4")],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [Soldier("red", "A7"), " ", Soldier("red", "C7"), " ",
+             Soldier("red", "E7"), " ", Soldier("red", "G7"), " ",
+             Soldier("red", "I7")],
             [" ", Cannon("red", "B8"), " ", " ", " ", " ", " ",
              Cannon("red", "H8"), " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -36,9 +40,9 @@ class XiangqiGame:
              Elephant("red", "G10"), Horse("red", "H10"),
              Chariot("red", "I10")]]
 
-        # convert contains both the capital and lower case to allow for
+        # converters contain both the capital and lower case to allow for
         # flexibility. It also allows us to not use .upper() on all comparisons
-        # which saves some code on every function
+        # which saves some code
         self._convertAlpha = {"A": 0, "a": 0, "B": 1, "b": 1, "C": 2, "c": 2,
                               "D": 3, "d": 3, "E": 4, "e": 4, "F": 5, "f": 5,
                               "G": 6, "g": 6, "H": 7, "h": 7, "I": 8, "i": 8}
@@ -109,15 +113,17 @@ class XiangqiGame:
             print("It is not your turn")
             return False
 
+        # we set a place holder for the targeted piece
+        targeted_space = self._board[self._convertNum[
+            move_to_coordinates[1:]]][self._convertAlpha[
+            move_to_coordinates[0]]]
+
         # see if the move_to space is occupied
-        if self._board[self._convertNum[move_to_coordinates[1:]]][
-            self._convertAlpha[move_to_coordinates[0]]] != " ":
+        if targeted_space != " ":
 
             # if the space is occupied we check to make sure it is not a
             # friendly piece in the space
-            if current_piece.get_color() == self._board[self._convertNum[
-                move_to_coordinates[1:]]][self._convertAlpha[
-                move_to_coordinates[0]]].get_color():
+            if current_piece.get_color() == targeted_space.get_color():
                 print("Samezies")
                 return False
 
@@ -133,21 +139,44 @@ class XiangqiGame:
             # move_to_coordinates
             if current_piece.movement(move_to_coordinates) == True:
 
-                # check to see if the general is the piece being taken
-                if self._board[self._convertNum[
-                move_to_coordinates[1:]]][self._convertAlpha[
-                move_to_coordinates[0]]].get_name() == "General":
+                # check to see if the space being moved to is empty
+                if targeted_space == " ":
+
+                    # if the movement is valid for the piece _move_completion is
+                    # called which handles the actual movement of the piece within
+                    # the board.
+                    self._move_completion(target_coordinates,
+                                          move_to_coordinates,
+                                          current_piece)
+
+                    return True
+
+                # check to see if the being move to contains a general
+                if targeted_space.get_name() != "General":
+
+                    self._move_completion(target_coordinates,
+                                          move_to_coordinates,
+                                          current_piece)
+
+                    return True
+
+                # if control has made it past the empty check and past the check
+                # to see if it is not general we know the targeted piece is a
+                # general.
+                else:
 
                     # the game state is changed to reflect which ever color took
                     # a general has won
                     self._game_state = current_piece.get_color().upper() + \
                                        "_WON"
 
-                # if the movement is valid for the piece _move_completion is
-                # called which handles the actual movement of the piece within
-                # the board.
-                self._move_completion(target_coordinates, move_to_coordinates,
-                                      current_piece)
+                    # call the final movement method
+                    self._move_completion(target_coordinates,
+                                          move_to_coordinates,
+                                          current_piece)
+
+                    return True
+
 
             # if the move cannot be completed by the piece make_move() returns
             # false.
@@ -156,29 +185,46 @@ class XiangqiGame:
 
         if current_piece.get_name() in ["General", "Chariot", "Cannon",
                                         "Elephant", "Horse"]:
-            # the movement for these four is passed the board, and the
-            # move_to_coordinates
+
             if current_piece.movement(self, move_to_coordinates) == True:
 
-                # check to see if the general is the piece being taken
-                if self._board[self._convertNum[
-                move_to_coordinates[1:]]][self._convertAlpha[
-                move_to_coordinates[0]]].get_name() == "General":
+                # check to see if the space being moved to is empty
+                if targeted_space == " ":
+
+                    # if the movement is valid for the piece _move_completion is
+                    # called which handles the actual movement of the piece within
+                    # the board.
+                    self._move_completion(target_coordinates,
+                                          move_to_coordinates,
+                                          current_piece)
+
+                    return True
+
+                # check to see if the being move to contains a general
+                if targeted_space.get_name() != "General":
+
+                    self._move_completion(target_coordinates,
+                                          move_to_coordinates,
+                                          current_piece)
+
+                    return True
+
+                # if control has made it past the empty check and past the check
+                # to see if it is not general we know the targeted piece is a
+                # general.
+                else:
 
                     # the game state is changed to reflect which ever color took
                     # a general has won
                     self._game_state = current_piece.get_color().upper() + \
                                        "_WON"
 
-                # if the movement is valid for the piece _move_completion is
-                # called which handles the actual movement of the piece within
-                # the board.
-                self._move_completion(target_coordinates, move_to_coordinates,
-                                      current_piece)
-            # if the move cannot be completed by the piece make_move() returns
-            # false.
-            else:
-                return False
+                    # call the final movement method
+                    self._move_completion(target_coordinates,
+                                          move_to_coordinates,
+                                          current_piece)
+
+                    return True
 
     def display_character(self, target_coordinates):
         """
@@ -249,8 +295,6 @@ class XiangqiGame:
         # if the color was not red or black
         else:
             return "Color must be red or black."
-
-
 
 
 class GamePieces:
@@ -1315,5 +1359,9 @@ class Horse(GamePieces):
 
 game = XiangqiGame()
 game.display_board()
-game.make_move("E10", "E1")
+game.make_move("B8", "A8")
+print(game.get_game_state())
+game.make_move("A4", "A5")
+game.make_move("A8", "A5")
+game.display_board()
 print(game.get_game_state())

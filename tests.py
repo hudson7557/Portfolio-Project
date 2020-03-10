@@ -238,3 +238,61 @@ board1.make_move("B10", "B9")
 board1.make_move("B1", "C3")
 board1.make_move("C3", "B1")
 board1.display_board()"""
+
+
+"""
+For testing turn order and general being taken
+# movements 
+game = XiangqiGame()
+game.display_board()
+game.make_move("A10", "A1")
+game.make_move("B1", "C3")
+game.make_move("E10", "E9")
+game.make_move("B3", "A3")
+game.make_move("E9", "E8")
+game.make_move("I1", "I5")
+game.make_move("D10", "E9")
+game.make_move("E1", "E8")
+
+# other movements 
+game = XiangqiGame()
+game.display_board()
+game.make_move("A10", "A1")
+game.make_move("B1", "C3")
+game.make_move("E10", "E9")
+game.make_move("B3", "A3")
+game.make_move("E9", "E8")
+game.make_move("I1", "I7")
+game.make_move("D10", "E9")
+game.make_move("I7", "E7")
+game.make_move("I10", "I8")
+game.make_move("E7", "E8")
+
+
+print(game.get_game_state())
+game.display_board()
+# board
+
+        self._board = [
+            [Chariot("black", "A1"), Horse("black", "B1"),
+             Elephant("black", "C1"), Advisor("black", "D1"),
+             General("black", "E1"), Advisor("black", "F1"),
+             Elephant("black", "G1"), Horse("black", "H1"),
+             Chariot("black", "I1")],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", Cannon("black", "B3"), " ", " ", " ", " ", " ",
+             Cannon("black", "H3"), " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", Cannon("red", "B8"), " ", " ", " ", " ", " ",
+             Cannon("red", "H8"), " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [Chariot("red", "A10"), Horse("red", "B10"), Elephant("red", "C10"),
+             Advisor("red", "D10"),
+             General("red", "E10"), Advisor("red", "F10"),
+             Elephant("red", "G10"), Horse("red", "H10"),
+             Chariot("red", "I10")]]
+
+             """
