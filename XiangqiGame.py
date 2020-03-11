@@ -65,6 +65,10 @@ class XiangqiGame:
                                   list_1 if piece != " " if piece.get_color()
                                   == "black"]
 
+        self._black_general_location = "E1"
+
+        self._red_general_location = "E10"
+
     def display_board(self):
         """
         Method for displaying the targeted Xiangqi board
@@ -119,9 +123,9 @@ class XiangqiGame:
             self._convertAlpha[target_coordinates[0]]]
 
         # make sure turn order is being followed
-        if current_piece.get_color().upper() != self._player_turn.upper():
-            print("It is not your turn")
-            return False
+        # if current_piece.get_color().upper() != self._player_turn.upper():
+            # print("It is not your turn")
+            # return False
 
         # we set a place holder for the targeted piece
         targeted_space = self._board[self._convertNum[
@@ -336,6 +340,46 @@ class XiangqiGame:
                       piece.get_location())
                 num += 1
 
+    def check_finder(self, color):
+
+        # if red was the last piece to go we check if black is now in check
+        if color == 'red':
+            for piece in self._red_piece_list:
+                if self.make_move(piece.get_location(),
+                                  self._black_general_location) == True:
+                    self._black_check = True
+                    print("Truers")
+            else:
+                print("Not in check")
+                return False
+
+        # if black was last to go we check if red is now in check
+        if color == 'black':
+            for piece in self._black_piece_list:
+                if self.make_move(piece.get_location(),
+                                   self._red_general_location) == True:
+                    self._red_check = True
+                    print("Truers")
+
+            else:
+                print("Not in check")
+                return False
+
+    def general_location(self, color, new_location):
+        """
+        Setter method to update the generals location data member
+        :return: Nothing
+        """
+        if color == 'red':
+            self._red_general_location = new_location
+
+        if color == 'black':
+            self._black_general_location = new_location
+
+    def display_general(self):
+        print("black", self._black_general_location)
+        print("red", self._red_general_location)
+
 class GamePieces:
     """
     A super class for all the other game pieces that gets used to streamline
@@ -419,6 +463,7 @@ class General(GamePieces):
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
                         self._location = next_location
+                        board.general_location("red", next_location)
                         return True
                     else:
                         print("Not allowed")
@@ -435,6 +480,7 @@ class General(GamePieces):
                     if 7 <= new_y <= 9:
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
+                        board.general_location("red", next_location)
                         self._location = next_location
                         return True
                     else:
@@ -460,6 +506,8 @@ class General(GamePieces):
 
                     # if nothing is in the way the move goes through.
                     else:
+                        board.general_location("red", next_location)
+                        self._location = next_location
                         return True
 
                 else:
@@ -484,6 +532,7 @@ class General(GamePieces):
                     if 3 <= new_x <= 5:
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
+                        board.general_location("black", next_location)
                         self._location = next_location
                         return True
                     else:
@@ -503,7 +552,9 @@ class General(GamePieces):
                     if 0 <= new_y <= 2:
 
                         # if the move is in the palace the pieces location is
-                        # updated and True is returned.
+                        # updated both in the piece and in the board data member
+                        # and True is returned.
+                        board.general_location("black", next_location)
                         self._location = next_location
                         return True
                     else:
@@ -531,6 +582,8 @@ class General(GamePieces):
 
                     # if nothing is in the way the move goes through.
                     else:
+                        board.general_location("black", next_location)
+                        self._location = next_location
                         return True
 
                 else:
@@ -1411,3 +1464,9 @@ class Horse(GamePieces):
 game = XiangqiGame()
 game.show_list('red')
 game.show_list('black')
+game.display_board()
+game.make_move("E10", "E9")
+game.make_move("E1", "E2")
+game.make_move("E9", "D9")
+game.display_board()
+game.display_general()
