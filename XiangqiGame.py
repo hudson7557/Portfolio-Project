@@ -160,15 +160,31 @@ class XiangqiGame:
                                           move_to_coordinates,
                                           current_piece)
 
+                    # the check finder is called to see if the move resulted in
+                    # a check.
+                    self.check_finder(current_piece.get_color())
 
                     return True
 
-                # check to see if the piece being moved is a not a general
+                # check to see if the piece being attacked is a not a general
                 if targeted_space.get_name() != "General":
 
+                    # move completion is called to move the piece in the list
                     self._move_completion(target_coordinates,
                                           move_to_coordinates,
                                           current_piece)
+
+                    # if a piece is removed we need to remove it from the list
+                    # of pieces so it can no longer be called.
+                    if targeted_space.get_color() == 'red':
+                        self._red_piece_list.remove(targeted_space)
+
+                    if targeted_space.get_color() == 'black':
+                        self._black_piece_list.remove(targeted_space)
+
+                    # the check finder is called to see if the move resulted in
+                    # a check.
+                    self.check_finder(current_piece.get_color())
 
                     return True
 
@@ -186,6 +202,14 @@ class XiangqiGame:
                     self._move_completion(target_coordinates,
                                           move_to_coordinates,
                                           current_piece)
+
+                    # we don't update the list because someone has won and the
+                    # game is complete meaning that check doesn't matter any
+                    # more.
+
+                    # the check finder is called to see if the move resulted in
+                    # a check.
+                    self.check_finder(current_piece.get_color())
 
                     return True
 
@@ -210,6 +234,10 @@ class XiangqiGame:
                                           move_to_coordinates,
                                           current_piece)
 
+                    # the check finder is called to see if the move resulted in
+                    # a check.
+                    self.check_finder(current_piece.get_color())
+
                     return True
 
                 # check to see if the being move to contains a general
@@ -218,6 +246,21 @@ class XiangqiGame:
                     self._move_completion(target_coordinates,
                                           move_to_coordinates,
                                           current_piece)
+
+                    # since a list of all the piece objects, sorted by their
+                    # color, is generated at the start of a new game. We have
+                    # to update that list in order to have check_finder work.
+                    # So when a piece is taken we remove it from it's respective
+                    # list.
+                    if targeted_space.get_color() == 'red':
+                        self._red_piece_list.remove(targeted_space)
+
+                    if targeted_space.get_color() == 'black':
+                        self._black_piece_list.remove(targeted_space)
+
+                    # the check finder is called to see if the move resulted in
+                    # a check.
+                    self.check_finder(current_piece.get_color())
 
                     return True
 
@@ -235,6 +278,10 @@ class XiangqiGame:
                     self._move_completion(target_coordinates,
                                           move_to_coordinates,
                                           current_piece)
+
+                    # we don't update the list because someone has won and the
+                    # game is complete meaning that check doesn't matter any
+                    # more.
 
                     return True
 
@@ -422,6 +469,32 @@ class XiangqiGame:
     def display_general(self):
         print("black", self._black_general_location)
         print("red", self._red_general_location)
+
+    def test_in_check_move(self, target_coordinates, move_to_coordinates,
+                           current_piece, targeted_piece):
+        # make move in the actual board
+        self._move_completion(target_coordinates, move_to_coordinates, current_piece)
+        # check for check
+        if self.check_finder(current_piece.get_color()) == True:
+            # reverse the move
+            self._move_completion(move_to_coordinates,
+                                  target_coordinates, current_piece)
+            self._board[self._convertNum[move_to_coordinates[1:]]][
+                self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
+            return False
+
+        # if the check finder does not find a check we remove check
+        # and reverse the move
+        else:
+            if current_piece.get_color() == "red":
+                self._red_check = False
+            if current_piece.get_color() == "black":
+                self._black_check = False
+            self._move_completion(move_to_coordinates,
+                                  target_coordinates, current_piece)
+            self._board[self._convertNum[move_to_coordinates[1:]]][
+                self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
+            return True
 
 class GamePieces:
     """
@@ -1505,7 +1578,10 @@ class Horse(GamePieces):
                 return False
 
 game = XiangqiGame()
+game.make_move("A7", "A6")
+game.make_move("A4", "A5")
+game.make_move("A6", "A5")
 game.display_board()
-game.display_general()
-game.check_finder('black')
-print(game.is_in_check('red'))
+game.show_list("black")
+game.show_list("red")
+game.display_board()
