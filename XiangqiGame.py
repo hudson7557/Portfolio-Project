@@ -107,14 +107,12 @@ class XiangqiGame:
         # make sure the coordinates being targeted actually contain a piece
         if self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]] == " ":
-            print("No valid piece in location")
             return False
 
         # make sure the coordinates being moved to are on the board using the
         # dictionaries to check if the string is valid or not.
         if move_to_coordinates[0] not in self._convertAlpha or \
                 move_to_coordinates[1:] not in self._convertNum:
-            print("Nah dog")
             return False
 
         # make sure the move_to_coordinates are on the board.
@@ -138,7 +136,6 @@ class XiangqiGame:
             # if the space is occupied we check to make sure it is not a
             # friendly piece in the space
             if current_piece.get_color() == targeted_space.get_color():
-                print("Samezies")
                 return False
 
         # call the target pieces movement ability with the new coordinates
@@ -155,6 +152,7 @@ class XiangqiGame:
 
                 # check to see if the space being moved to is empty
                 if targeted_space == " ":
+
                     # if the movement is valid for the piece _move_completion is
                     # called which handles the actual movement of the piece
                     # within the board.
@@ -162,9 +160,10 @@ class XiangqiGame:
                                           move_to_coordinates,
                                           current_piece)
 
+
                     return True
 
-                # check to see if the being move to contains a general
+                # check to see if the piece being moved is a not a general
                 if targeted_space.get_name() != "General":
 
                     self._move_completion(target_coordinates,
@@ -341,29 +340,73 @@ class XiangqiGame:
                 num += 1
 
     def check_finder(self, color):
+        """
+        Method for checking whether a certain color is in check. Since each
+        piece stores it's own movement validations and doesn't actually move the
+        piece, we can call the pieces movement to see if the general is in
+        check.
+        :param color: the color of the team you want to know is in check
+        :return: True or False
+        """
+
 
         # if red was the last piece to go we check if black is now in check
         if color == 'red':
+
+            # our list of pieces contains all the piece objects
             for piece in self._red_piece_list:
-                if self.make_move(piece.get_location(),
-                                  self._black_general_location) == True:
-                    self._black_check = True
-                    print("Truers")
-            else:
-                print("Not in check")
-                return False
+
+                # we sort which call is made to their movement based on their
+                # name.
+                if piece.get_name() in ["Soldier", "Advisor"]:
+
+                    # if a pieces movement returns True we set the check status
+                    if piece.movement(self._black_general_location) == True:
+
+                        # we would then set the check status to reflect this.
+                        self._black_check = True
+                        return True
+
+                # the names in this list get the board object passed to them.
+                if piece.get_name() in ["General", "Chariot", "Cannon",
+                                        "Elephant", "Horse"]:
+
+                    # if a pieces movement returns True we set the check status
+                    if piece.movement(self,
+                                      self._black_general_location) == True:
+                        self._black_check = True
+                        return True
+
+            # if the general is safe nothing happens.
+            return False
 
         # if black was last to go we check if red is now in check
         if color == 'black':
             for piece in self._black_piece_list:
-                if self.make_move(piece.get_location(),
-                                   self._red_general_location) == True:
-                    self._red_check = True
-                    print("Truers")
 
-            else:
-                print("Not in check")
-                return False
+                # we sort which call is made to their movement based on their
+                # name.
+                if piece.get_name() in ["Soldier", "Advisor"]:
+
+                    # if a pieces movement returns True we set the check status
+                    if piece.movement(self._red_general_location) == True:
+
+                        # we would then set the check status to reflect this.
+                        self._red_check = True
+                        return True
+
+                # the names in this list get the board object passed to them.
+                if piece.get_name() in ["General", "Chariot", "Cannon",
+                                        "Elephant", "Horse"]:
+
+                    # if a pieces movement returns True we set the check status
+                    if piece.movement(self,
+                                      self._black_general_location) == True:
+                        self._red_check = True
+                        return True
+
+            # if the general is safe nothing happens.
+            return False
 
     def general_location(self, color, new_location):
         """
@@ -661,7 +704,7 @@ class Soldier(GamePieces):
                     return True
 
                 else:
-                    print("Nopers")
+                    print("Noper")
                     return False
             # if the soldier has crossed the river yet.
             if old_y >= 5:
@@ -1462,11 +1505,7 @@ class Horse(GamePieces):
                 return False
 
 game = XiangqiGame()
-game.show_list('red')
-game.show_list('black')
-game.display_board()
-game.make_move("E10", "E9")
-game.make_move("E1", "E2")
-game.make_move("E9", "D9")
 game.display_board()
 game.display_general()
+game.check_finder('black')
+print(game.is_in_check('red'))
