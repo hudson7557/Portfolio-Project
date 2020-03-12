@@ -119,8 +119,8 @@ class XiangqiGame:
             self._convertAlpha[target_coordinates[0]]]
 
         # make sure turn order is being followed
-        if current_piece.get_color().upper() != self._player_turn.upper():
-            return False
+        # if current_piece.get_color().upper() != self._player_turn.upper():
+            # return False
 
         # we set a place holder for the targeted piece
         targeted_space = self._board[self._convertNum[
@@ -1421,3 +1421,12 @@ class Horse(GamePieces):
             else:
                 return False
 
+game = XiangqiGame()
+game.display_board()
+move_result = game.make_move('c1', 'e3')
+print(move_result)
+black_in_check = game.is_in_check('black')
+print(black_in_check)
+print(game.make_move('e7', 'e6'))
+game.display_board()
+state = game.get_game_state()
