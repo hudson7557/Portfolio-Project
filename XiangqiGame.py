@@ -119,8 +119,8 @@ class XiangqiGame:
             self._convertAlpha[target_coordinates[0]]]
 
         # make sure turn order is being followed
-        # if current_piece.get_color().upper() != self._player_turn.upper():
-            # return False
+        if current_piece.get_color().upper() != self._player_turn.upper():
+            return False
 
         # we set a place holder for the targeted piece
         targeted_space = self._board[self._convertNum[
@@ -324,7 +324,6 @@ class XiangqiGame:
         """
         Method allowing users to check the current state of the game.
         """
-
         return self._game_state
 
     def check_space(self, x_coord, y_coord):
@@ -396,11 +395,17 @@ class XiangqiGame:
 
         # if the user types in black
         if color.lower() == "black":
-            return self._black_check
+            if self._black_check == True:
+                return True
+            else:
+                return False
 
         # if the user types in red
         if color.lower() == "red":
-            return self._red_check
+            if self._red_check == True:
+                return True
+            else:
+                return False
 
         # if the color was not red or black
         else:
@@ -1420,4 +1425,15 @@ class Horse(GamePieces):
                     return True
             else:
                 return False
+
+game = XiangqiGame()
+move_result = game.make_move('c1', 'e3')
+print(move_result)
+game.display_board()
+black_in_check = game.is_in_check('black')
+print(black_in_check)
+print(game.make_move('e7', 'e6'))
+
+state = game.get_game_state()
+print(state)
 
