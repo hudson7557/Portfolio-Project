@@ -1120,8 +1120,14 @@ class Chariot(GamePieces):
 
 
 class Cannon(GamePieces):
+    """
+    Creates a representation of a Cannon piece
+    """
 
     def __init__(self, color, location):
+        """
+        Initializes a Cannon object
+        """
         self._name = "Cannon"
         self._character = "炮"
         super().__init__(color, location)
@@ -1135,7 +1141,14 @@ class Cannon(GamePieces):
         return self._name
 
     def movement(self, board, next_location):
+        """
+        Movement method for the cannon
+        :param board: the board the cannon is on
+        :param next_location: the location the cannon is targeting
+        :return: True or False
+        """
 
+        # converting location coordinates
         old_x = self._convertAlpha[self._location[0]]
         old_y = self._convertNum[self._location[1:]]
         new_x = self._convertAlpha[next_location[0]]
@@ -1143,92 +1156,106 @@ class Cannon(GamePieces):
 
         # moving forwards?
         if old_y > new_y and old_x == new_x:
+
             space = old_y
             piece_counter = 0
 
             # if the move is not capturing something
             if board.check_space(new_x, new_y) == " ":
-                # the while loop check to make sure nothing is in the way since
-                # this is a non-capture move
+
+                # check to make sure nothing is in the way since this is a
+                # non-capture move
                 while space != new_y:
+
                     space -= 1
+
                     # if a space is not an empty space the move cannot be
                     # completed and false is returned.
                     if board.check_space(old_x, space) != " ":
                         return False
+
                 # if all the spaces are empty the false statement never triggers
                 # and we return true.
                 return True
 
             # if the move is a capture move
             if board.check_space(new_x, new_y) != " ":
-                # first check the color, if they are different we check for a
-                # jump, if it's friendly we return false.
-                if board.check_space(new_x, new_y).get_color() != \
-                        self.get_color():
-                    # while loop checks to see how many pieces are in between
-                    # the start and end (A to B) we take 1 off the new_y because
-                    # we don't want to count the piece to be taken.
-                    while space != new_y + 1:
-                        space -= 1
-                        # the number of pieces in between are tracked by
-                        # incrementing the piece_counter
-                        if board.check_space(old_x, space) != " ":
-                            piece_counter += 1
-                    # once the while loop is complete we check if there is only
-                    # one piece, if there is only 1 the move goes through
-                    if piece_counter == 1:
-                        return True
-                    # if there is more than one piece to jump we return false.
-                    else:
-                        return False
 
+                # while loop checks to see how many pieces are in between
+                # the start and end (A to B) we take 1 off the new_y because
+                # we don't want to count the piece to be taken.
+                while space != new_y + 1:
+
+                    space -= 1
+
+                    # the number of pieces in between are tracked by
+                    # incrementing the piece_counter
+                    if board.check_space(old_x, space) != " ":
+
+                        piece_counter += 1
+
+                # once the while loop is complete we check if there is only
+                # one piece, if there is only 1 the move goes through
+                if piece_counter == 1:
+                    return True
+
+                # if there is more than one piece to jump we return false.
                 else:
                     return False
+
+            # if the move was invalid
+            else:
+                return False
         # moving backwards?
         if old_y < new_y and old_x == new_x:
+
             space = old_y
             piece_counter = 0
 
             # if the move is not capturing something
             if board.check_space(new_x, new_y) == " ":
+
                 # the while loop check to make sure nothing is in the way since
                 # this is a non-capture move
                 while space != new_y:
+
                     space += 1
                     # if a space is not an empty space the move cannot be
                     # completed and false is returned.
                     if board.check_space(old_x, space) != " ":
                         return False
+
                 # if all the spaces are empty the false statement never triggers
                 # and we return true.
                 return True
 
             # if the move is a capture move
             if board.check_space(new_x, new_y) != " ":
-                # first check the color, if they are different we check for a
-                # jump, if it's friendly we return false.
-                if board.check_space(new_x, new_y).get_color() != \
-                        self.get_color():
-                    # while loop checks to see how many pieces are in between
-                    # the start and end (A to B) we take 1 off the new_y because
-                    # we don't want to count the piece to be taken.
-                    while space != new_y - 1:
-                        space += 1
-                        # the number of pieces in between are tracked by
-                        # incrementing the piece_counter
-                        if board.check_space(old_x, space) != " ":
-                            piece_counter += 1
-                    # once the while loop is complete we check if there is only
-                    # one piece, if there is only 1 the move goes through
-                    if piece_counter == 1:
-                        return True
-                    # if there is more than one piece to jump we return false.
-                    else:
-                        return False
 
+                # while loop checks to see how many pieces are in between
+                # the start and end (A to B) we take 1 off the new_y because
+                # we don't want to count the piece to be taken.
+                while space != new_y - 1:
+
+                    space += 1
+
+                    # the number of pieces in between are tracked by
+                    # incrementing the piece_counter
+                    if board.check_space(old_x, space) != " ":
+
+                        piece_counter += 1
+
+                # once the while loop is complete we check if there is only
+                # one piece, if there is only 1 the move goes through
+                if piece_counter == 1:
+                    return True
+
+                # if there is more than one piece to jump we return false.
                 else:
                     return False
+
+            else:
+                return False
 
         # moving right?
         if old_x < new_x and old_y == new_y:
@@ -1237,87 +1264,103 @@ class Cannon(GamePieces):
 
             # if the move is not capturing something
             if board.check_space(new_x, new_y) == " ":
+
                 # the while loop check to make sure nothing is in the way since
                 # this is a non-capture move
                 while space != new_x:
+
                     space += 1
+
                     # if a space is not an empty space the move cannot be
                     # completed and false is returned.
                     if board.check_space(space, old_y) != " ":
                         return False
+
                 # if all the spaces are empty the false statement never triggers
                 # and we return true.
                 return True
 
             # if the move is a capture move
             if board.check_space(new_x, new_y) != " ":
-                # first check the color, if they are different we check for a
-                # jump, if it's friendly we return false.
-                if board.check_space(new_x, new_y).get_color() != \
-                        self.get_color():
-                    # while loop checks to see how many pieces are in between
-                    # the start and end (A to B) we take 1 off the new_y because
-                    # we don't want to count the piece to be taken.
-                    while space != new_x - 1:
-                        space += 1
-                        # the number of pieces in between are tracked by
-                        # incrementing the piece_counter
-                        if board.check_space(space, old_x) != " ":
-                            piece_counter += 1
-                    # once the while loop is complete we check if there is only
-                    # one piece, if there is only 1 the move goes through
-                    if piece_counter == 1:
-                        return True
-                    # if there is more than one piece to jump we return false.
-                    else:
-                        return False
 
+                # while loop checks to see how many pieces are in between
+                # the start and end (A to B) we take 1 off the new_y because
+                # we don't want to count the piece to be taken.
+                while space != new_x - 1:
+
+                    space += 1
+
+                    # the number of pieces in between are tracked by
+                    # incrementing the piece_counter
+                    if board.check_space(space, old_x) != " ":
+
+                        piece_counter += 1
+
+                # once the while loop is complete we check if there is only
+                # one piece, if there is only 1 the move goes through
+                if piece_counter == 1:
+                    return True
+
+                # if there is more than one piece to jump we return false.
                 else:
                     return False
+
+            else:
+                return False
+
         # moving left?
         if old_x > new_x and old_y == new_y:
+
             space = old_x
             piece_counter = 0
 
             # if the move is not capturing something
             if board.check_space(new_x, new_y) == " ":
+
                 # the while loop check to make sure nothing is in the way since
                 # this is a non-capture move
                 while space != new_x:
+
                     space -= 1
+
                     # if a space is not an empty space the move cannot be
                     # completed and false is returned.
                     if board.check_space(space, old_y) != " ":
                         return False
+
                 # if all the spaces are empty the false statement never triggers
                 # and we return true.
                 return True
 
             # if the move is a capture move
             if board.check_space(new_x, new_y) != " ":
-                # first check the color, if they are different we check for a
-                # jump, if it's friendly we return false.
-                if board.check_space(new_x, new_y).get_color() != \
-                        self.get_color():
-                    # while loop checks to see how many pieces are in between
-                    # the start and end (A to B) we take 1 off the new_y because
-                    # we don't want to count the piece to be taken.
-                    while space != new_x + 1:
-                        space -= 1
-                        # the number of pieces in between are tracked by
-                        # incrementing the piece_counter
-                        if board.check_space(space, old_y) != " ":
-                            piece_counter += 1
-                    # once the while loop is complete we check if there is only
-                    # one piece, if there is only 1 the move goes through
-                    if piece_counter == 1:
-                        return True
-                    # if there is more than one piece to jump we return false.
-                    else:
-                        return False
 
+                # while loop checks to see how many pieces are in between
+                # the start and end (A to B) we take 1 off the new_y because
+                # we don't want to count the piece to be taken.
+                while space != new_x + 1:
+
+                    space -= 1
+
+                    # the number of pieces in between are tracked by
+                    # incrementing the piece_counter
+                    if board.check_space(space, old_y) != " ":
+                        piece_counter += 1
+
+                # once the while loop is complete we check if there is only
+                # one piece, if there is only 1 the move goes through
+                if piece_counter == 1:
+                    return True
+
+                # if there is more than one piece to jump we return false.
                 else:
                     return False
+
+            # if no valid move was made
+            else:
+                return False
+
+        # if no valid move was made
         else:
             return False
 

@@ -132,3 +132,28 @@ print(list_2)
 
 
 
+""" # for cannons, removed the friendly fire check
+            if board.check_space(new_x, new_y) != " ":
+                # first check the color, if they are different we check for a
+                # jump, if it's friendly we return false.
+                if board.check_space(new_x, new_y).get_color() != \
+                        self.get_color():
+                    # while loop checks to see how many pieces are in between
+                    # the start and end (A to B) we take 1 off the new_y because
+                    # we don't want to count the piece to be taken.
+                    while space != new_x - 1:
+                        space += 1
+                        # the number of pieces in between are tracked by
+                        # incrementing the piece_counter
+                        if board.check_space(space, old_x) != " ":
+                            piece_counter += 1
+                    # once the while loop is complete we check if there is only
+                    # one piece, if there is only 1 the move goes through
+                    if piece_counter == 1:
+                        return True
+                    # if there is more than one piece to jump we return false.
+                    else:
+                        return False
+
+                else:
+                    return False"""
