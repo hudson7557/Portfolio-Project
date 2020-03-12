@@ -15,31 +15,32 @@ class XiangqiGame:
 
         self._game_state = "UNFINISHED"
 
+        # board is represented by an array
         self._board = [
-            [Chariot("black", "A1"), Horse("black", "B1"),
-             Elephant("black", "C1"), Advisor("black", "D1"),
-             General("black", "E1"), Advisor("black", "F1"),
-             Elephant("black", "G1"), Horse("black", "H1"),
-             Chariot("black", "I1")],
+            [Chariot("red", "A1"), Horse("red", "B1"),
+             Elephant("red", "C1"), Advisor("red", "D1"),
+             General("red", "E1"), Advisor("red", "F1"),
+             Elephant("red", "G1"), Horse("red", "H1"),
+             Chariot("rec", "I1")],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", Cannon("black", "B3"), " ", " ", " ", " ", " ",
-             Cannon("black", "H3"), " "],
-            [Soldier("black", "A4"), " ", Soldier("black", "C4"), " ",
-             Soldier("black", "E4"), " ", Soldier("black", "G4"), " ",
-             Soldier("black", "I4")],
+            [" ", Cannon("red", "B3"), " ", " ", " ", " ", " ",
+             Cannon("red", "H3"), " "],
+            [Soldier("red", "A4"), " ", Soldier("red", "C4"), " ",
+             Soldier("red", "E4"), " ", Soldier("red", "G4"), " ",
+             Soldier("red", "I4")],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [Soldier("red", "A7"), " ", Soldier("red", "C7"), " ",
-             Soldier("red", "E7"), " ", Soldier("red", "G7"), " ",
-             Soldier("red", "I7")],
-            [" ", Cannon("red", "B8"), " ", " ", " ", " ", " ",
-             Cannon("red", "H8"), " "],
+            [Soldier("black", "A7"), " ", Soldier("black", "C7"), " ",
+             Soldier("black", "E7"), " ", Soldier("black", "G7"), " ",
+             Soldier("black", "I7")],
+            [" ", Cannon("black", "B8"), " ", " ", " ", " ", " ",
+             Cannon("black", "H8"), " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [Chariot("red", "A10"), Horse("red", "B10"), Elephant("red", "C10"),
-             Advisor("red", "D10"),
-             General("red", "E10"), Advisor("red", "F10"),
-             Elephant("red", "G10"), Horse("red", "H10"),
-             Chariot("red", "I10")]]
+            [Chariot("black", "A10"), Horse("black", "B10"), Elephant("black", "C10"),
+             Advisor("black", "D10"),
+             General("black", "E10"), Advisor("black", "F10"),
+             Elephant("black", "G10"), Horse("black", "H10"),
+             Chariot("black", "I10")]]
 
         # converters contain both the capital and lower case to allow for
         # flexibility. It also allows us to not use .upper() on all comparisons
@@ -57,6 +58,8 @@ class XiangqiGame:
 
         self._red_check = False
 
+        # list comprehensions to make a list of all the pieces in the board
+        # sorted by color.
         self._red_piece_list = [piece for list_1 in self._board for piece in
                                 list_1 if piece != " " if piece.get_color()
                                 == "red"]
@@ -65,9 +68,9 @@ class XiangqiGame:
                                   list_1 if piece != " " if piece.get_color()
                                   == "black"]
 
-        self._black_general_location = "E1"
+        self._black_general_location = "E10"
 
-        self._red_general_location = "E10"
+        self._red_general_location = "E1"
 
     def display_board(self):
         """
@@ -212,10 +215,6 @@ class XiangqiGame:
                                           move_to_coordinates,
                                           current_piece)
 
-                    # we don't update the list because someone has won and the
-                    # game is complete meaning that check doesn't matter any
-                    # more.
-
                     # the check finder is called to see if the move resulted in
                     # a check.
                     self.check_finder(current_piece.get_color())
@@ -226,6 +225,7 @@ class XiangqiGame:
             # false.
             else:
                 return False
+
         # same as above, pieces with the names in the list have the board passed
         # to them in order to make specific checks or moves.
         if current_piece.get_name() in ["General", "Chariot", "Cannon",
@@ -395,17 +395,11 @@ class XiangqiGame:
 
         # if the user types in black
         if color.lower() == "black":
-            if self._black_check == True:
-                return True
-            else:
-                return False
+            return self._black_check
 
         # if the user types in red
         if color.lower() == "red":
-            if self._red_check == True:
-                return True
-            else:
-                return False
+            return self._red_check
 
         # if the color was not red or black
         else:
@@ -541,6 +535,32 @@ class XiangqiGame:
                 self._black_piece_list.append(targeted_piece)
                 return False
 
+        if current_piece.get_color() == 'black':
+
+            # check for check
+            if self.check_finder('red') == False:
+                # reverse the move
+                self._move_completion(move_to_coordinates,
+                                      target_coordinates, current_piece)
+                self._board[self._convertNum[move_to_coordinates[1:]]][
+                    self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
+
+                self._red_piece_list.append(targeted_piece)
+
+                if current_piece.get_color() == "red":
+                    self._red_check = False
+                if current_piece.get_color() == "black":
+                    self._black_check = False
+                return True
+
+            else:
+                # still reverse the move
+                self._move_completion(move_to_coordinates,
+                                      target_coordinates, current_piece)
+                self._board[self._convertNum[move_to_coordinates[1:]]][
+                    self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
+                self._red_piece_list.append(targeted_piece)
+                return False
 
 class GamePieces:
     """
@@ -613,7 +633,7 @@ class General(GamePieces):
         new_x = self._convertAlpha[next_location[0]]
         new_y = self._convertNum[next_location[1:]]
 
-        if self._color == "red":
+        if self._color == "black":
 
             # see if the x axis is changing
             if old_x != new_x:
@@ -624,7 +644,10 @@ class General(GamePieces):
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
                         self._location = next_location
-                        board.general_location("red", next_location)
+
+                        # since the board also tracks the generals location we
+                        # must update the boards general location
+                        board.general_location("black", next_location)
                         return True
                     else:
                         return False
@@ -639,12 +662,12 @@ class General(GamePieces):
                     if 7 <= new_y <= 9:
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
-                        board.general_location("red", next_location)
+                        board.general_location("black", next_location)
                         return True
                     else:
                         return False
 
-                # the red Generals flying general move
+                # the black Generals flying general move
                 # if we are targeting the general on the other side.
                 if board.check_space(new_x, new_y).get_name() == "General":
 
@@ -662,7 +685,7 @@ class General(GamePieces):
 
                     # if nothing is in the way the move goes through.
                     else:
-                        board.general_location("red", next_location)
+                        board.general_location("black", next_location)
                         self._location = next_location
                         return True
 
@@ -672,7 +695,7 @@ class General(GamePieces):
             else:
                 return False
 
-        if self._color == "black":
+        if self._color == "red":
 
             # see if the x axis is changing
             if old_x != new_x:
@@ -682,7 +705,7 @@ class General(GamePieces):
                     if 3 <= new_x <= 5:
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
-                        board.general_location("black", next_location)
+                        board.general_location("red", next_location)
                         return True
                     else:
                         return False
@@ -701,7 +724,7 @@ class General(GamePieces):
                         # if the move is in the palace the pieces location is
                         # updated both in the piece and in the board data member
                         # and True is returned.
-                        board.general_location("black", next_location)
+                        board.general_location("red", next_location)
                         return True
                     else:
                         return False
@@ -726,7 +749,7 @@ class General(GamePieces):
 
                     # if nothing is in the way the move goes through.
                     else:
-                        board.general_location("black", next_location)
+                        board.general_location("red", next_location)
                         return True
 
                 else:
@@ -753,7 +776,7 @@ class Soldier(GamePieces):
         new_x = self._convertAlpha[next_location[0]]
         new_y = self._convertNum[next_location[1:]]
 
-        if self._color == "red":
+        if self._color == "black":
 
             # check to see if the red soldier has crossed the river or not.
             if old_y >= 5:
@@ -779,7 +802,7 @@ class Soldier(GamePieces):
                 else:
                     return False
 
-        if self._color == "black":
+        if self._color == "red":
 
             # check to see if the red soldier has crossed the river or not.
             if old_y <= 4:
@@ -1106,9 +1129,11 @@ class Advisor(GamePieces):
         new_x = self._convertAlpha[next_location[0]]
         new_y = self._convertNum[next_location[1:]]
 
-        if self._color == "red":
+        if self._color == "black":
+
             # check to make sure the move to space is within the palace
             if 7 <= new_y <= 9 and 3 <= new_x <= 5:
+
                 # if the piece is moving up & right
                 if old_x + 1 == new_x and old_y - 1 == new_y:
                     return True
@@ -1116,20 +1141,26 @@ class Advisor(GamePieces):
                 # if the piece is moving down & right
                 if old_x + 1 == new_x and old_y + 1 == new_y:
                     return True
+
                 # if the piece is moving down & left
                 if old_x - 1 == new_x and old_y + 1 == new_y:
                     return True
+
                 # if the piece is moving up & left
                 if old_x - 1 == new_x and old_y - 1 == new_y:
                     return True
+
                 else:
                     return False
+
             else:
                 return False
 
-        if self._color == "black":
+        if self._color == "red":
+
             # check to make sure the move to space is within the palace
             if 0 <= new_y <= 2 and 3 <= new_x <= 5:
+
                 # if the piece is moving up & right
                 if old_x + 1 == new_x and old_y - 1 == new_y:
                     return True
@@ -1137,12 +1168,15 @@ class Advisor(GamePieces):
                 # if the piece is moving down & right
                 if old_x + 1 == new_x and old_y + 1 == new_y:
                     return True
+
                 # if the piece is moving down & left
                 if old_x - 1 == new_x and old_y + 1 == new_y:
                     return True
+
                 # if the piece is moving up & left
                 if old_x - 1 == new_x and old_y - 1 == new_y:
                     return True
+
                 else:
                     return False
             else:
@@ -1165,7 +1199,7 @@ class Elephant(GamePieces):
         new_x = self._convertAlpha[next_location[0]]
         new_y = self._convertNum[next_location[1:]]
 
-        if self._color == "red":
+        if self._color == "black":
 
             # check to make sure the move to space is on the red side
             if 5 <= new_y <= 9:
@@ -1242,7 +1276,7 @@ class Elephant(GamePieces):
             else:
                 return False
 
-        if self._color == "black":
+        if self._color == "red":
 
             # check to make sure the move to space is on the red side
             if 0 <= new_y <= 4:
@@ -1425,5 +1459,3 @@ class Horse(GamePieces):
                     return True
             else:
                 return False
-
-
