@@ -1456,8 +1456,14 @@ class Advisor(GamePieces):
 
 
 class Elephant(GamePieces):
+    """
+    Class used to represent an Elephant piece
+    """
 
     def __init__(self, color, location):
+        """
+        Used to initialize an Elephant piece
+        """
         self._name = "Elephant"
         self._character = "相"
         super().__init__(color, location)
@@ -1471,14 +1477,17 @@ class Elephant(GamePieces):
         return self._name
 
     def movement(self, board, next_location):
+
+        # converting to list indices
         old_x = self._convertAlpha[self._location[0]]
         old_y = self._convertNum[self._location[1:]]
         new_x = self._convertAlpha[next_location[0]]
         new_y = self._convertNum[next_location[1:]]
 
+        # black contains it's own control flow
         if self._color == "black":
 
-            # check to make sure the move to space is on the red side
+            # check to make sure the move to space is on the black side
             if 5 <= new_y <= 9:
 
                 # if the piece is moving up & right
@@ -1553,6 +1562,7 @@ class Elephant(GamePieces):
             else:
                 return False
 
+        # red contains it's own bounds checks
         if self._color == "red":
 
             # check to make sure the move to space is on the red side
@@ -1632,7 +1642,15 @@ class Elephant(GamePieces):
 
 
 class Horse(GamePieces):
+    """
+    Class used to represent a Horse piece
+    """
+
     def __init__(self, color, location):
+        """
+        Initializes a Horse piece
+        """
+
         self._name = "Horse"
         self._character = "馬"
         super().__init__(color, location)
@@ -1646,6 +1664,8 @@ class Horse(GamePieces):
         return self._name
 
     def movement(self, board, next_location):
+
+        # converting to list indices
         old_x = self._convertAlpha[self._location[0]]
         old_y = self._convertNum[self._location[1:]]
         new_x = self._convertAlpha[next_location[0]]
@@ -1694,6 +1714,8 @@ class Horse(GamePieces):
                 # if the space is empty then it's just a simple movement.
                 else:
                     return True
+
+            # if no valid move was made
             else:
                 return False
 
@@ -1739,5 +1761,7 @@ class Horse(GamePieces):
                 # if the space is empty then it's just a simple movement.
                 else:
                     return True
+
+            # if no valid move was made
             else:
                 return False
