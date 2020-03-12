@@ -381,6 +381,8 @@ class XiangqiGame:
         self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]] = " "
 
+        current_piece.location_setter(move_to_coordinates)
+
         # change who's turn it is
         if current_piece.get_color().lower() == 'red':
             self._player_turn = 'black'
@@ -566,6 +568,9 @@ class GamePieces:
         # converts the string number to the correct integer.
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
                             "7": 6, "8": 7, "9": 8, "10": 9}
+
+    def location_setter(self, new_location):
+        self._location = new_location
 
     def get_color(self):
         """
@@ -782,7 +787,6 @@ class Soldier(GamePieces):
                 # is a check to make sure it maintains it's x value.
                 if old_y - 1 == new_y and old_x == new_x:
                     print("moved forward")
-                    self._location = next_location
                     return True
 
                 else:
@@ -793,12 +797,10 @@ class Soldier(GamePieces):
 
                 if old_y - 1 == new_y and old_x == new_x:
                     print("Moved forward")
-                    self._location = next_location
                     return True
 
                 if (old_x - 1 == new_x or old_x + 1 == new_x) and \
                         old_y == new_y:
-                    self._location = next_location
                     print("Moved left or right")
                     return True
                 else:
@@ -816,7 +818,6 @@ class Soldier(GamePieces):
                 # is a check to make sure it maintains it's x value.
                 if old_y + 1 == new_y and old_x == new_x:
                     print("moved forward")
-                    self._location = next_location
                     return True
 
                 else:
@@ -827,12 +828,10 @@ class Soldier(GamePieces):
 
                 if old_y + 1 == new_y and old_x == new_x:
                     print("Moved forward")
-                    self._location = next_location
                     return True
 
                 if (old_x - 1 == new_x or old_x + 1 == new_x) and \
                         old_y == new_y:
-                    self._location = next_location
                     print("Moved left or right")
                     return True
                 else:
@@ -865,17 +864,11 @@ class Chariot(GamePieces):
                     if board.check_space(space, old_y).get_color() != \
                             self.get_color():
                         if space == new_x:
-                            print("Take a piece")
-                            self._location = next_location
                             return True
                         if space != new_x:
-                            print("An opponents piece is in your way, "
-                                  "try moving on to their space")
                             return False
                     else:
-                        print("Same team!")
                         return False
-            self._location = next_location
             return True
 
         # moving right?
@@ -887,18 +880,11 @@ class Chariot(GamePieces):
                     if board.check_space(space, old_y).get_color() != \
                             self.get_color():
                         if space == new_x:
-                            print("Take a piece")
-                            self._location = next_location
                             return True
                         if space != new_x:
-                            print("An opponents piece is in your way, "
-                                  "try moving on to their space")
                             return False
                     else:
-                        print("Same team!")
                         return False
-            self._location = next_location
-            print("Alonsy")
             return True
 
         # moving forward?
@@ -910,18 +896,12 @@ class Chariot(GamePieces):
                     if board.check_space(old_x, space).get_color() != \
                             self.get_color():
                         if space == new_y:
-                            print("Take a piece")
-                            self._location = next_location
                             return True
                         if space != new_y:
-                            print("An opponents piece is in your way, "
-                                  "try moving on to their space")
                             return False
                     else:
-                        print("Same team!")
                         return False
-            self._location = next_location
-            print("Alonsy 2")
+
             return True
 
         # moving backwards?
@@ -933,22 +913,14 @@ class Chariot(GamePieces):
                     if board.check_space(old_x, space).get_color() != \
                             self.get_color():
                         if space == new_y:
-                            print("Take a piece")
-                            self._location = next_location
                             return True
                         if space != new_y:
-                            print("An opponents piece is in your way, "
-                                  "try moving on to their space")
                             return False
                     else:
-                        print("Same team!")
                         return False
-            self._location = next_location
-            print("Alonsy 3")
             return True
 
         else:
-            print("False")
             return False
 
 
@@ -1628,3 +1600,6 @@ print(game.check_space(4, 8).get_location())
 game.display_board()
 print(game.is_in_check('red'))
 game.show_list('black')
+game.make_move("A9", "E9") # still need to allow the move through if it would
+# remove the check
+game.display_board()
