@@ -786,25 +786,20 @@ class Soldier(GamePieces):
                 # point the soldier can't move left or right which is why there
                 # is a check to make sure it maintains it's x value.
                 if old_y - 1 == new_y and old_x == new_x:
-                    print("moved forward")
                     return True
 
                 else:
-                    print("Nopers")
                     return False
             # if the soldier has crossed the river yet.
             if old_y <= 4:
 
                 if old_y - 1 == new_y and old_x == new_x:
-                    print("Moved forward")
                     return True
 
                 if (old_x - 1 == new_x or old_x + 1 == new_x) and \
                         old_y == new_y:
-                    print("Moved left or right")
                     return True
                 else:
-                    print("Impossible")
                     return False
 
         if self._color == "black":
@@ -817,22 +812,18 @@ class Soldier(GamePieces):
                 # point the soldier can't move left or right which is why there
                 # is a check to make sure it maintains it's x value.
                 if old_y + 1 == new_y and old_x == new_x:
-                    print("moved forward")
                     return True
 
                 else:
-                    print("Noper")
                     return False
             # if the soldier has crossed the river yet.
             if old_y >= 5:
 
                 if old_y + 1 == new_y and old_x == new_x:
-                    print("Moved forward")
                     return True
 
                 if (old_x - 1 == new_x or old_x + 1 == new_x) and \
                         old_y == new_y:
-                    print("Moved left or right")
                     return True
                 else:
                     return False
@@ -955,13 +946,9 @@ class Cannon(GamePieces):
                     # if a space is not an empty space the move cannot be
                     # completed and false is returned.
                     if board.check_space(old_x, space) != " ":
-                        print("A piece is in your way, you cannot jump a piece"
-                              "unless you are capturing.")
                         return False
                 # if all the spaces are empty the false statement never triggers
                 # and we return true.
-                print("Yes")
-                self._location = next_location
                 return True
 
             # if the move is a capture move
@@ -982,16 +969,12 @@ class Cannon(GamePieces):
                     # once the while loop is complete we check if there is only
                     # one piece, if there is only 1 the move goes through
                     if piece_counter == 1:
-                        print("TAKE THE ENEMY")
-                        self._location = next_location
                         return True
                     # if there is more than one piece to jump we return false.
                     else:
-                        print("Can't jump more than one piece.")
                         return False
 
                 else:
-                    print("That's your own piece")
                     return False
         # moving backwards?
         if old_y < new_y and old_x == new_x:
@@ -1007,13 +990,9 @@ class Cannon(GamePieces):
                     # if a space is not an empty space the move cannot be
                     # completed and false is returned.
                     if board.check_space(old_x, space) != " ":
-                        print("A piece is in your way, you cannot jump a piece"
-                              "unless you are capturing.")
                         return False
                 # if all the spaces are empty the false statement never triggers
                 # and we return true.
-                self._location = next_location
-                print("yes")
                 return True
 
             # if the move is a capture move
@@ -1034,16 +1013,12 @@ class Cannon(GamePieces):
                     # once the while loop is complete we check if there is only
                     # one piece, if there is only 1 the move goes through
                     if piece_counter == 1:
-                        print("TAKE THE ENEMY")
-                        self._location = next_location
                         return True
                     # if there is more than one piece to jump we return false.
                     else:
-                        print("Can't jump more than one piece.")
                         return False
 
                 else:
-                    print("That's your own piece")
                     return False
 
         # moving right?
@@ -1060,13 +1035,9 @@ class Cannon(GamePieces):
                     # if a space is not an empty space the move cannot be
                     # completed and false is returned.
                     if board.check_space(space, old_y) != " ":
-                        print("A piece is in your way, you cannot jump a piece"
-                              "unless you are capturing.")
                         return False
                 # if all the spaces are empty the false statement never triggers
                 # and we return true.
-                self._location = next_location
-                print("yes")
                 return True
 
             # if the move is a capture move
@@ -1087,16 +1058,12 @@ class Cannon(GamePieces):
                     # once the while loop is complete we check if there is only
                     # one piece, if there is only 1 the move goes through
                     if piece_counter == 1:
-                        print("TAKE THE ENEMY")
-                        self._location = next_location
                         return True
                     # if there is more than one piece to jump we return false.
                     else:
-                        print("Can't jump more than one piece.")
                         return False
 
                 else:
-                    print("That's your own piece")
                     return False
         # moving left?
         if old_x > new_x and old_y == new_y:
@@ -1112,13 +1079,9 @@ class Cannon(GamePieces):
                     # if a space is not an empty space the move cannot be
                     # completed and false is returned.
                     if board.check_space(space, old_y) != " ":
-                        print("A piece is in your way, you cannot jump a piece"
-                              "unless you are capturing.")
                         return False
                 # if all the spaces are empty the false statement never triggers
                 # and we return true.
-                self._location = next_location
-                print("yes")
                 return True
 
             # if the move is a capture move
@@ -1139,19 +1102,14 @@ class Cannon(GamePieces):
                     # once the while loop is complete we check if there is only
                     # one piece, if there is only 1 the move goes through
                     if piece_counter == 1:
-                        print("TAKE THE ENEMY")
-                        self._location = next_location
                         return True
                     # if there is more than one piece to jump we return false.
                     else:
-                        print("Can't jump more than one piece.")
                         return False
 
                 else:
-                    print("That's your own piece")
                     return False
         else:
-            print("Because")
             return False
 
 
@@ -1603,3 +1561,4 @@ game.show_list('black')
 game.make_move("A9", "E9") # still need to allow the move through if it would
 # remove the check
 game.display_board()
+game.show_list('black')
