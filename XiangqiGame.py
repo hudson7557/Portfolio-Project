@@ -1366,8 +1366,14 @@ class Cannon(GamePieces):
 
 
 class Advisor(GamePieces):
+    """
+    Represents an Advisor game piece
+    """
 
     def __init__(self, color, location):
+        """
+        Initializes an Advisor game piece
+        """
         self._name = "Advisor"
         self._character = "仕"
         super().__init__(color, location)
@@ -1381,11 +1387,14 @@ class Advisor(GamePieces):
         return self._name
 
     def movement(self, next_location):
+
+        # converting to list indices
         old_x = self._convertAlpha[self._location[0]]
         old_y = self._convertNum[self._location[1:]]
         new_x = self._convertAlpha[next_location[0]]
         new_y = self._convertNum[next_location[1:]]
 
+        # black contains it's own bound checks
         if self._color == "black":
 
             # check to make sure the move to space is within the palace
@@ -1407,12 +1416,15 @@ class Advisor(GamePieces):
                 if old_x - 1 == new_x and old_y - 1 == new_y:
                     return True
 
+                # if no valid move was made
                 else:
                     return False
 
+            # if no valid move was made (kind of needless)
             else:
                 return False
 
+        # red conatins it's own bounds checks
         if self._color == "red":
 
             # check to make sure the move to space is within the palace
@@ -1434,8 +1446,11 @@ class Advisor(GamePieces):
                 if old_x - 1 == new_x and old_y - 1 == new_y:
                     return True
 
+                # if no valid move was made
                 else:
                     return False
+
+            # if no valid move was made
             else:
                 return False
 
