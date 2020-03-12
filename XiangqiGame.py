@@ -863,6 +863,9 @@ class General(GamePieces):
 class Soldier(GamePieces):
 
     def __init__(self, color, location):
+        """
+        Initializes a soldier piece
+        """
         self._name = "Soldier"
         self._character = "兵"
         super().__init__(color, location)
@@ -876,61 +879,73 @@ class Soldier(GamePieces):
         return self._name
 
     def movement(self, next_location):
+        """
+        The soldier movement
+        :param next_location: location to be moved to
+        :return: True or False
+        """
 
         old_x = self._convertAlpha[self._location[0]]
         old_y = self._convertNum[self._location[1:]]
         new_x = self._convertAlpha[next_location[0]]
         new_y = self._convertNum[next_location[1:]]
 
+        # black has it's own control flow to account for the river.
         if self._color == "black":
 
             # check to see if the red soldier has crossed the river or not.
             if old_y >= 5:
 
-                # we subtract 1 from the old_y axis to make sure the move is
-                # only one space and that the piece has moved forward. At this
-                # point the soldier can't move left or right which is why there
-                # is a check to make sure it maintains it's x value.
+                # since the soldier can only move forward prior to the river
                 if old_y - 1 == new_y and old_x == new_x:
                     return True
 
+                # if the soldier did anything other than moving forward
                 else:
                     return False
-            # if the soldier has crossed the river yet.
+
+            # if the soldier has crossed the river.
             if old_y <= 4:
 
+                # can move one on the y_axis
                 if old_y - 1 == new_y and old_x == new_x:
                     return True
 
+                # can move one on the x_axis
                 if (old_x - 1 == new_x or old_x + 1 == new_x) and \
                         old_y == new_y:
                     return True
+
+                # if the movement was invalid
                 else:
                     return False
 
         if self._color == "red":
 
-            # check to see if the red soldier has crossed the river or not.
+            # check to see if the red soldier has crossed the river.
             if old_y <= 4:
 
-                # we subtract 1 from the old_y axis to make sure the move is
-                # only one space and that the piece has moved forward. At this
-                # point the soldier can't move left or right which is why there
-                # is a check to make sure it maintains it's x value.
+                # soldier can only move forward prior to river crossing
                 if old_y + 1 == new_y and old_x == new_x:
                     return True
 
+                # if the soldier did anything other than move forward
                 else:
                     return False
-            # if the soldier has crossed the river yet.
+
+            # if the soldier has crossed the river.
             if old_y >= 5:
 
+                # can move 1 space forward
                 if old_y + 1 == new_y and old_x == new_x:
                     return True
 
+                # can move 1 space left or right
                 if (old_x - 1 == new_x or old_x + 1 == new_x) and \
                         old_y == new_y:
                     return True
+
+                # if no valid move was made
                 else:
                     return False
 
