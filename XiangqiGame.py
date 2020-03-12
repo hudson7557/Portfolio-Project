@@ -1421,12 +1421,3 @@ class Horse(GamePieces):
             else:
                 return False
 
-game = XiangqiGame()
-game.display_board()
-move_result = game.make_move('c1', 'e3')
-print(move_result)
-black_in_check = game.is_in_check('black')
-print(black_in_check)
-print(game.make_move('e7', 'e6'))
-game.display_board()
-state = game.get_game_state()
