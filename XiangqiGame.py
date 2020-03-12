@@ -34,7 +34,7 @@ class XiangqiGame:
              Soldier("red", "I7")],
             [" ", Cannon("red", "B8"), " ", " ", " ", " ", " ",
              Cannon("red", "H8"), " "],
-            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [Chariot("red", "A9"), " ", " ", Soldier("black", "D9"), " ", " ", " ", " ", " "],
             [Chariot("red", "A10"), Horse("red", "B10"), Elephant("red", "C10"),
              Advisor("red", "D10"),
              General("red", "E10"), Advisor("red", "F10"),
@@ -122,8 +122,8 @@ class XiangqiGame:
 
         # make sure turn order is being followed
         # if current_piece.get_color().upper() != self._player_turn.upper():
-            # print("It is not your turn")
-            # return False
+        # print("It is not your turn")
+        # return False
 
         # we set a place holder for the targeted piece
         targeted_space = self._board[self._convertNum[
@@ -150,9 +150,29 @@ class XiangqiGame:
             # move_to_coordinates
             if current_piece.movement(move_to_coordinates) == True:
 
+                # test in check returns whether or not the move clears the
+                # check. If it does execution continues, else return false.
+                if current_piece.get_color() == "red" and \
+                        self._red_check == True:
+                    if not self.test_in_check_move(target_coordinates,
+                                                   move_to_coordinates,
+                                                   current_piece,
+                                                   targeted_space):
+                        return False
+
+                if current_piece.get_color() == "black" and \
+                        self._black_check == True:
+
+                    # test in check returns whether or not the move clears the
+                    # check. If it does execution continues, else return false.
+                    if not self.test_in_check_move(target_coordinates,
+                                                   move_to_coordinates,
+                                                   current_piece,
+                                                   targeted_space):
+                        return False
+
                 # check to see if the space being moved to is empty
                 if targeted_space == " ":
-
                     # if the movement is valid for the piece _move_completion is
                     # called which handles the actual movement of the piece
                     # within the board.
@@ -224,6 +244,25 @@ class XiangqiGame:
 
             # if the movement is possible
             if current_piece.movement(self, move_to_coordinates) == True:
+
+                if current_piece.get_color() == "red" and \
+                        self._red_check == True:
+                    if not self.test_in_check_move(target_coordinates,
+                                                   move_to_coordinates,
+                                                   current_piece,
+                                                   targeted_space):
+                        return False
+
+                if current_piece.get_color() == "black" and \
+                        self._black_check == True:
+
+                    # test in check returns whether or not the move clears the
+                    # check. If it does execution continues, else return false.
+                    if not self.test_in_check_move(target_coordinates,
+                                                   move_to_coordinates,
+                                                   current_piece,
+                                                   targeted_space):
+                        return False
 
                 # check to see if the space being moved to is empty
                 if targeted_space == " ":
@@ -377,7 +416,7 @@ class XiangqiGame:
             for piece in self._black_piece_list:
                 print(num, piece.get_name(), piece.get_color(),
                       piece.get_location())
-                num +=1
+                num += 1
 
         if color.lower() == "red":
             num = 1
@@ -396,7 +435,6 @@ class XiangqiGame:
         :return: True or False
         """
 
-
         # if red was the last piece to go we check if black is now in check
         if color == 'red':
 
@@ -409,7 +447,6 @@ class XiangqiGame:
 
                     # if a pieces movement returns True we set the check status
                     if piece.movement(self._black_general_location) == True:
-
                         # we would then set the check status to reflect this.
                         self._black_check = True
                         return True
@@ -437,7 +474,6 @@ class XiangqiGame:
 
                     # if a pieces movement returns True we set the check status
                     if piece.movement(self._red_general_location) == True:
-
                         # we would then set the check status to reflect this.
                         self._red_check = True
                         return True
@@ -473,28 +509,35 @@ class XiangqiGame:
     def test_in_check_move(self, target_coordinates, move_to_coordinates,
                            current_piece, targeted_piece):
         # make move in the actual board
-        self._move_completion(target_coordinates, move_to_coordinates, current_piece)
-        # check for check
-        if self.check_finder(current_piece.get_color()) == True:
-            # reverse the move
-            self._move_completion(move_to_coordinates,
-                                  target_coordinates, current_piece)
-            self._board[self._convertNum[move_to_coordinates[1:]]][
-                self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
-            return False
+        self._move_completion(target_coordinates, move_to_coordinates,
+                              current_piece)
 
-        # if the check finder does not find a check we remove check
-        # and reverse the move
-        else:
-            if current_piece.get_color() == "red":
-                self._red_check = False
-            if current_piece.get_color() == "black":
-                self._black_check = False
-            self._move_completion(move_to_coordinates,
-                                  target_coordinates, current_piece)
-            self._board[self._convertNum[move_to_coordinates[1:]]][
-                self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
-            return True
+        if current_piece.get_color() == 'red':
+
+            # check for check
+            if self.check_finder('black') == False:
+                # reverse the move
+                self._move_completion(move_to_coordinates,
+                                      target_coordinates, current_piece)
+                self._board[self._convertNum[move_to_coordinates[1:]]][
+                    self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
+
+                if current_piece.get_color() == "red":
+                    self._red_check = False
+                if current_piece.get_color() == "black":
+                    self._black_check = False
+                print("THIS IS TRUE LOOK AT MEEEEEEEE")
+                return True
+
+            if self.check_finder('black') == True:
+                # still reverse the move
+                self._move_completion(move_to_coordinates,
+                                      target_coordinates, current_piece)
+                self._board[self._convertNum[move_to_coordinates[1:]]][
+                    self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
+                print("THIS IS FALSE LOOOK ATT MEEEEEEEE!!!!!")
+                return False
+
 
 class GamePieces:
     """
@@ -793,7 +836,6 @@ class Soldier(GamePieces):
                     print("Moved left or right")
                     return True
                 else:
-                    print("Impossible")
                     return False
 
 
@@ -1577,11 +1619,12 @@ class Horse(GamePieces):
                 print("Not a valid move with the Horse")
                 return False
 
+
 game = XiangqiGame()
 game.make_move("A7", "A6")
-game.make_move("A4", "A5")
-game.make_move("A6", "A5")
+print(game.is_in_check('red'), "HI")
+game.make_move("D9", "E9")
+print(game.check_space(4, 8).get_location())
 game.display_board()
-game.show_list("black")
-game.show_list("red")
-game.display_board()
+print(game.is_in_check('red'))
+game.show_list('black')
