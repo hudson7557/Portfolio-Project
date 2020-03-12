@@ -34,7 +34,7 @@ class XiangqiGame:
              Soldier("red", "I7")],
             [" ", Cannon("red", "B8"), " ", " ", " ", " ", " ",
              Cannon("red", "H8"), " "],
-            [Chariot("red", "A9"), " ", " ", Soldier("black", "D9"), " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " "],
             [Chariot("red", "A10"), Horse("red", "B10"), Elephant("red", "C10"),
              Advisor("red", "D10"),
              General("red", "E10"), Advisor("red", "F10"),
@@ -96,12 +96,10 @@ class XiangqiGame:
         # dictionaries to check if the string is valid or not.
         if target_coordinates[0] not in self._convertAlpha or \
                 target_coordinates[1:] not in self._convertNum:
-            print("inconceivable!")
             return False
 
         # if the move targets the same space the move is considered invalid
         if target_coordinates == move_to_coordinates:
-            print("invalid move")
             return False
 
         # make sure the coordinates being targeted actually contain a piece
@@ -121,9 +119,8 @@ class XiangqiGame:
             self._convertAlpha[target_coordinates[0]]]
 
         # make sure turn order is being followed
-        # if current_piece.get_color().upper() != self._player_turn.upper():
-        # print("It is not your turn")
-        # return False
+        if current_piece.get_color().upper() != self._player_turn.upper():
+            return False
 
         # we set a place holder for the targeted piece
         targeted_space = self._board[self._convertNum[
@@ -193,14 +190,6 @@ class XiangqiGame:
                     self._move_completion(target_coordinates,
                                           move_to_coordinates,
                                           current_piece)
-
-                    # if a piece is removed we need to remove it from the list
-                    # of pieces so it can no longer be called.
-                    if targeted_space.get_color() == 'red':
-                        self._red_piece_list.remove(targeted_space)
-
-                    if targeted_space.get_color() == 'black':
-                        self._black_piece_list.remove(targeted_space)
 
                     # the check finder is called to see if the move resulted in
                     # a check.
@@ -286,17 +275,6 @@ class XiangqiGame:
                                           move_to_coordinates,
                                           current_piece)
 
-                    # since a list of all the piece objects, sorted by their
-                    # color, is generated at the start of a new game. We have
-                    # to update that list in order to have check_finder work.
-                    # So when a piece is taken we remove it from it's respective
-                    # list.
-                    if targeted_space.get_color() == 'red':
-                        self._red_piece_list.remove(targeted_space)
-
-                    if targeted_space.get_color() == 'black':
-                        self._black_piece_list.remove(targeted_space)
-
                     # the check finder is called to see if the move resulted in
                     # a check.
                     self.check_finder(current_piece.get_color())
@@ -372,6 +350,23 @@ class XiangqiGame:
         called by make_move() when necessary. So no touchy.
         """
 
+        targeted_space = self._board[self._convertNum[
+            move_to_coordinates[1:]]][self._convertAlpha[
+            move_to_coordinates[0]]]
+
+        # since a list of all the piece objects, sorted by their
+        # color, is generated at the start of a new game. We have
+        # to update that list in order to have check_finder work.
+        # So when a piece is taken we remove it from it's respective
+        # list.
+
+        if targeted_space != " ":
+            if targeted_space.get_color() == 'red':
+                self._red_piece_list.remove(targeted_space)
+
+            if targeted_space.get_color() == 'black':
+                self._black_piece_list.remove(targeted_space)
+
         # moves the piece
         self._board[self._convertNum[move_to_coordinates[1:]]][
             self._convertAlpha[move_to_coordinates[0]]] = current_piece
@@ -381,8 +376,8 @@ class XiangqiGame:
         self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]] = " "
 
+        # update the pieces current location
         current_piece.location_setter(move_to_coordinates)
-
         # change who's turn it is
         if current_piece.get_color().lower() == 'red':
             self._player_turn = 'black'
@@ -524,20 +519,21 @@ class XiangqiGame:
                 self._board[self._convertNum[move_to_coordinates[1:]]][
                     self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
 
+                self._black_piece_list.append(targeted_piece)
+
                 if current_piece.get_color() == "red":
                     self._red_check = False
                 if current_piece.get_color() == "black":
                     self._black_check = False
-                print("THIS IS TRUE LOOK AT MEEEEEEEE")
                 return True
 
-            if self.check_finder('black') == True:
+            else:
                 # still reverse the move
                 self._move_completion(move_to_coordinates,
                                       target_coordinates, current_piece)
                 self._board[self._convertNum[move_to_coordinates[1:]]][
                     self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
-                print("THIS IS FALSE LOOOK ATT MEEEEEEEE!!!!!")
+                self._black_piece_list.append(targeted_piece)
                 return False
 
 
@@ -613,10 +609,6 @@ class General(GamePieces):
         new_y = self._convertNum[next_location[1:]]
 
         if self._color == "red":
-            # check to make sure the move call is actually changing the location
-            if old_x != new_x and old_y != new_y:
-                print("You doink")
-                return False
 
             # see if the x axis is changing
             if old_x != new_x:
@@ -630,10 +622,8 @@ class General(GamePieces):
                         board.general_location("red", next_location)
                         return True
                     else:
-                        print("Not allowed")
                         return False
                 else:
-                    print("Not allowed")
                     return False
 
             # first we check to see if the y axis is changing
@@ -645,10 +635,8 @@ class General(GamePieces):
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
                         board.general_location("red", next_location)
-                        self._location = next_location
                         return True
                     else:
-                        print("3")
                         return False
 
                 # the red Generals flying general move
@@ -665,7 +653,6 @@ class General(GamePieces):
 
                         # if something is in the way we return false.
                         if board.check_space(old_x, space) != " ":
-                            print("A piece is in the way of this move")
                             return False
 
                     # if nothing is in the way the move goes through.
@@ -675,18 +662,12 @@ class General(GamePieces):
                         return True
 
                 else:
-                    print("2")
                     return False
 
             else:
-                print("1")
                 return False
 
         if self._color == "black":
-            # check to make sure the move is not going diagonally
-            if old_x != new_x and old_y != new_y:
-                print("You doink")
-                return False
 
             # see if the x axis is changing
             if old_x != new_x:
@@ -697,13 +678,10 @@ class General(GamePieces):
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
                         board.general_location("black", next_location)
-                        self._location = next_location
                         return True
                     else:
-                        print("Not allowed")
                         return False
                 else:
-                    print("Not allowed")
                     return False
 
             # first we check to see if the y axis is changing
@@ -719,10 +697,8 @@ class General(GamePieces):
                         # updated both in the piece and in the board data member
                         # and True is returned.
                         board.general_location("black", next_location)
-                        self._location = next_location
                         return True
                     else:
-                        print("3")
                         return False
 
                 # the black Generals flying general move
@@ -741,21 +717,17 @@ class General(GamePieces):
 
                         # if something is in the way we return false.
                         if board.check_space(old_x, space) != " ":
-                            print("A piece is in the way of this move")
                             return False
 
                     # if nothing is in the way the move goes through.
                     else:
                         board.general_location("black", next_location)
-                        self._location = next_location
                         return True
 
                 else:
-                    print("2")
                     return False
 
             else:
-                print("1")
                 return False
 
 
@@ -1134,29 +1106,20 @@ class Advisor(GamePieces):
             if 7 <= new_y <= 9 and 3 <= new_x <= 5:
                 # if the piece is moving up & right
                 if old_x + 1 == new_x and old_y - 1 == new_y:
-                    self._location = next_location
-                    print("Moved completed")
                     return True
 
                 # if the piece is moving down & right
                 if old_x + 1 == new_x and old_y + 1 == new_y:
-                    self._location = next_location
-                    print("Moved homie")
                     return True
                 # if the piece is moving down & left
                 if old_x - 1 == new_x and old_y + 1 == new_y:
-                    self._location = next_location
-                    print("Moved homie")
                     return True
                 # if the piece is moving up & left
                 if old_x - 1 == new_x and old_y - 1 == new_y:
-                    self._location = next_location
-                    print("Moved homie")
                     return True
                 else:
-                    print("Not a valid move with the Advisor")
+                    return False
             else:
-                print("OB")
                 return False
 
         if self._color == "black":
@@ -1164,29 +1127,20 @@ class Advisor(GamePieces):
             if 0 <= new_y <= 2 and 3 <= new_x <= 5:
                 # if the piece is moving up & right
                 if old_x + 1 == new_x and old_y - 1 == new_y:
-                    self._location = next_location
-                    print("Moved completed")
                     return True
 
                 # if the piece is moving down & right
                 if old_x + 1 == new_x and old_y + 1 == new_y:
-                    self._location = next_location
-                    print("Moved homie")
                     return True
                 # if the piece is moving down & left
                 if old_x - 1 == new_x and old_y + 1 == new_y:
-                    self._location = next_location
-                    print("Moved homie")
                     return True
                 # if the piece is moving up & left
                 if old_x - 1 == new_x and old_y - 1 == new_y:
-                    self._location = next_location
-                    print("Moved homie")
                     return True
                 else:
-                    print("Not a valid move with the Advisor")
+                    return False
             else:
-                print("OB")
                 return False
 
 
@@ -1216,21 +1170,15 @@ class Elephant(GamePieces):
 
                     # if the space is occupied the move cannot be completed
                     if board.check_space(old_x + 1, old_y - 1) != " ":
-                        print("A piece is in your way, you cannot jump a "
-                              "piece")
                         return False
 
                     # if the space being moved into is occupied we track that
                     # a piece was taken
                     if board.check_space(new_x, new_y) != " ":
-                        self._location = next_location
-                        print("piece taken")
                         return True
 
                     # if the space is not occupied it's just a movement
                     else:
-                        self._location = next_location
-                        print("Move completed")
                         return True
 
                 # if the piece is moving up & left
@@ -1238,22 +1186,15 @@ class Elephant(GamePieces):
 
                     # if the space is occupied the move cannot be completed
                     if board.check_space(old_x - 1, old_y - 1) != " ":
-                        print(
-                            "A piece is in your way, you cannot jump a "
-                            "piece")
                         return False
 
                     # if the space being moved into is occupied we track that
                     # a piece was taken
                     if board.check_space(new_x, new_y) != " ":
-                        self._location = next_location
-                        print("piece taken")
                         return True
 
                     # if the space is not occupied it's just a movement
                     else:
-                        self._location = next_location
-                        print("Move completed")
                         return True
 
                 # if the piece is moving down & right
@@ -1261,22 +1202,15 @@ class Elephant(GamePieces):
 
                     # if the space is occupied the move cannot be completed
                     if board.check_space(old_x + 1, old_y + 1) != " ":
-                        print(
-                            "A piece is in your way, you cannot jump a "
-                            "piece")
                         return False
 
                     # if the space being moved into is occupied we track that
                     # a piece was taken
                     if board.check_space(new_x, new_y) != " ":
-                        self._location = next_location
-                        print("piece taken")
                         return True
 
                     # if the space is not occupied it's just a movement
                     else:
-                        self._location = next_location
-                        print("Move completed")
                         return True
 
                 # if the piece is moving down & left
@@ -1284,32 +1218,23 @@ class Elephant(GamePieces):
 
                     # if the space is occupied the move cannot be completed
                     if board.check_space(old_x - 1, old_y + 1) != " ":
-                        print(
-                            "A piece is in your way, you cannot jump a "
-                            "piece")
                         return False
 
                     # if the space being moved into is occupied we track that
                     # a piece was taken
                     if board.check_space(new_x, new_y) != " ":
-                        self._location = next_location
-                        print("piece taken")
                         return True
 
                     # if the space is not occupied it's just a movement
                     else:
-                        self._location = next_location
-                        print("Move completed")
                         return True
 
                 # not a valid diagonal move
                 else:
-                    print("Not a 2 space diagonal move")
                     return False
 
             # out of bounds
             else:
-                print("Out of bounds for the Red Elephants")
                 return False
 
         if self._color == "black":
@@ -1322,21 +1247,15 @@ class Elephant(GamePieces):
 
                     # if the space is occupied the move cannot be completed
                     if board.check_space(old_x + 1, old_y - 1) != " ":
-                        print("A piece is in your way, you cannot jump a "
-                              "piece")
                         return False
 
                     # if the space being moved into is occupied we track that
                     # a piece was taken
                     if board.check_space(new_x, new_y) != " ":
-                        self._location = next_location
-                        print("piece taken")
                         return True
 
                     # if the space is not occupied it's just a movement
                     else:
-                        self._location = next_location
-                        print("Move completed")
                         return True
 
                 # if the piece is moving up & left
@@ -1344,22 +1263,15 @@ class Elephant(GamePieces):
 
                     # if the space is occupied the move cannot be completed
                     if board.check_space(old_x - 1, old_y - 1) != " ":
-                        print(
-                            "A piece is in your way, you cannot jump a "
-                            "piece")
                         return False
 
                     # if the space being moved into is occupied we track that
                     # a piece was taken
                     if board.check_space(new_x, new_y) != " ":
-                        self._location = next_location
-                        print("piece taken")
                         return True
 
                     # if the space is not occupied it's just a movement
                     else:
-                        self._location = next_location
-                        print("Move completed")
                         return True
 
                 # if the piece is moving down & right
@@ -1367,22 +1279,15 @@ class Elephant(GamePieces):
 
                     # if the space is occupied the move cannot be completed
                     if board.check_space(old_x + 1, old_y + 1) != " ":
-                        print(
-                            "A piece is in your way, you cannot jump a "
-                            "piece")
                         return False
 
                     # if the space being moved into is occupied we track that
                     # a piece was taken
                     if board.check_space(new_x, new_y) != " ":
-                        self._location = next_location
-                        print("piece taken")
                         return True
 
                     # if the space is not occupied it's just a movement
                     else:
-                        self._location = next_location
-                        print("Move completed")
                         return True
 
                 # if the piece is moving down & left
@@ -1390,32 +1295,23 @@ class Elephant(GamePieces):
 
                     # if the space is occupied the move cannot be completed
                     if board.check_space(old_x - 1, old_y + 1) != " ":
-                        print(
-                            "A piece is in your way, you cannot jump a "
-                            "piece")
                         return False
 
                     # if the space being moved into is occupied we track that
                     # a piece was taken
                     if board.check_space(new_x, new_y) != " ":
-                        self._location = next_location
-                        print("piece taken")
                         return True
 
                     # if the space is not occupied it's just a movement
                     else:
-                        self._location = next_location
-                        print("Move completed")
                         return True
 
                 # not a valid diagonal move
                 else:
-                    print("Not a 2 space diagonal move")
                     return False
 
             # out of bounds
             else:
-                print("Out of bounds for Black Elephants")
                 return False
 
 
@@ -1439,7 +1335,6 @@ class Horse(GamePieces):
 
             # check the space one above the current location
             if board.check_space(old_x, old_y - 1) != " ":
-                print("A piece is in your way")
                 return False
 
             # if the piece is moving back two on the y-axis, it can only move
@@ -1450,17 +1345,12 @@ class Horse(GamePieces):
                 # handled by make_move() we know that if it isn't empty it must
                 # be an opponents piece
                 if board.check_space(new_x, new_y) != " ":
-                    print("Piece taken")
-                    self._location = next_location
                     return True
 
                 # if the space is empty then it's just a simple movement.
                 else:
-                    print("Move successful")
-                    self._location = next_location
                     return True
             else:
-                print("Not a valid move with the Horse")
                 return False
 
         # if the piece is moving backwards
@@ -1468,7 +1358,6 @@ class Horse(GamePieces):
 
             # check the space one above the current location
             if board.check_space(old_x, old_y + 1) != " ":
-                print("A piece is in your way")
                 return False
 
             # if the piece is moving back two on the y-axis, it can only move
@@ -1479,17 +1368,12 @@ class Horse(GamePieces):
                 # handled by make_move() we know that if it isn't empty it must
                 # be an opponents piece
                 if board.check_space(new_x, new_y) != " ":
-                    print("Piece taken")
-                    self._location = next_location
                     return True
 
                 # if the space is empty then it's just a simple movement.
                 else:
-                    print("Move successful")
-                    self._location = next_location
                     return True
             else:
-                print("Not a valid move with the Horse")
                 return False
 
         # if the piece is moving right
@@ -1497,7 +1381,6 @@ class Horse(GamePieces):
 
             # check the space one above the current location
             if board.check_space(old_x + 1, old_y) != " ":
-                print("A piece is in your way")
                 return False
 
             # if the piece is moving back two on the y-axis, it can only move
@@ -1508,24 +1391,18 @@ class Horse(GamePieces):
                 # handled by make_move() we know that if it isn't empty it must
                 # be an opponents piece
                 if board.check_space(new_x, new_y) != " ":
-                    print("Piece taken")
-                    self._location = next_location
                     return True
 
                 # if the space is empty then it's just a simple movement.
                 else:
-                    print("Move successful")
-                    self._location = next_location
                     return True
             else:
-                print("Not a valid move with the Horse")
                 return False
 
         if old_x - 2 == new_x:
 
             # check the space one above the current location
             if board.check_space(old_x - 1, old_y) != " ":
-                print("A piece is in your way")
                 return False
 
             # if the piece is moving back two on the y-axis, it can only move
@@ -1536,29 +1413,11 @@ class Horse(GamePieces):
                 # handled by make_move() we know that if it isn't empty it must
                 # be an opponents piece
                 if board.check_space(new_x, new_y) != " ":
-                    print("Piece taken")
-                    self._location = next_location
                     return True
 
                 # if the space is empty then it's just a simple movement.
                 else:
-                    print("Move successful")
-                    self._location = next_location
                     return True
             else:
-                print("Not a valid move with the Horse")
                 return False
 
-
-game = XiangqiGame()
-game.make_move("A7", "A6")
-print(game.is_in_check('red'), "HI")
-game.make_move("D9", "E9")
-print(game.check_space(4, 8).get_location())
-game.display_board()
-print(game.is_in_check('red'))
-game.show_list('black')
-game.make_move("A9", "E9") # still need to allow the move through if it would
-# remove the check
-game.display_board()
-game.show_list('black')
