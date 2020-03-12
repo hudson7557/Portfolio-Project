@@ -5,17 +5,22 @@
 
 
 class XiangqiGame:
+    """
+    This class generates a game object of Xiangqi within the memory of the
+    computer.
+    """
 
     def __init__(self):
         """
-        Starts a game of Xiangqi as a list object. The board has a
-        coordinate grid with A-I on top and
-        1-10 on the left side. Open spaces denoted by a single space " ".
+        Starts a game of Xiangqi as a list object. The board has a coordinate
+        grid with A-I on top and 1-10 on the left side. Open spaces denoted by a
+        single space " ".
         """
 
         self._game_state = "UNFINISHED"
 
-        # board is represented by an array
+        # the board is represented by an array which contains objects of the
+        # pieces, and their data for initialization.
         self._board = [
             [Chariot("red", "A1"), Horse("red", "B1"),
              Elephant("red", "C1"), Advisor("red", "D1"),
@@ -36,8 +41,8 @@ class XiangqiGame:
             [" ", Cannon("black", "B8"), " ", " ", " ", " ", " ",
              Cannon("black", "H8"), " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [Chariot("black", "A10"), Horse("black", "B10"), Elephant("black", "C10"),
-             Advisor("black", "D10"),
+            [Chariot("black", "A10"), Horse("black", "B10"),
+             Elephant("black", "C10"),Advisor("black", "D10"),
              General("black", "E10"), Advisor("black", "F10"),
              Elephant("black", "G10"), Horse("black", "H10"),
              Chariot("black", "I10")]]
@@ -49,6 +54,8 @@ class XiangqiGame:
                               "D": 3, "d": 3, "E": 4, "e": 4, "F": 5, "f": 5,
                               "G": 6, "g": 6, "H": 7, "h": 7, "I": 8, "i": 8}
 
+        # converters using a dictionary allow us to quickly convert strings to
+        # list indices since we can make the sliced string a dictionary keyword.
         self._convertNum = {"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5,
                             "7": 6, "8": 7, "9": 8, "10": 9}
 
@@ -59,7 +66,7 @@ class XiangqiGame:
         self._red_check = False
 
         # list comprehensions to make a list of all the pieces in the board
-        # sorted by color.
+        # sorted by color, used for checking whether a color is in check.
         self._red_piece_list = [piece for list_1 in self._board for piece in
                                 list_1 if piece != " " if piece.get_color()
                                 == "red"]
@@ -68,6 +75,8 @@ class XiangqiGame:
                                   list_1 if piece != " " if piece.get_color()
                                   == "black"]
 
+        # generals have their location tracked on the board and in their object
+        # to make certain function calls easier.
         self._black_general_location = "E10"
 
         self._red_general_location = "E1"
@@ -82,10 +91,11 @@ class XiangqiGame:
 
     def make_move(self, target_coordinates, move_to_coordinates):
         """
-        This method handles general movement validation for a piece. If checks
-        all the precondition to make sure the move is potentially valid, then
-        calls a pieces specific movement to see if the move is valid for that
-        piece. If the move is valid _complete_move is called.
+        This method handles general movement validation for all pieces. It
+        checks all the preconditions to make sure the move is potentially valid,
+        then calls a pieces specific movement to see if the move is valid for
+        that piece. If the move is valid _complete_move is called which actually
+        handle movement within memory.
         :param target_coordinates: string of coordinates
         :param move_to_coordinates: string of coordinates
         :return: True of False
@@ -105,7 +115,7 @@ class XiangqiGame:
         if target_coordinates == move_to_coordinates:
             return False
 
-        # make sure the coordinates being targeted actually contain a piece
+        # make sure the coordinates point to a space containing a piece
         if self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]] == " ":
             return False
@@ -140,39 +150,45 @@ class XiangqiGame:
 
         # call the target pieces movement ability with the new coordinates
         # each piece contains it's own control flow to check if a move is valid
-        # if the move is valid the pieces movement returns true and the piece is
-        # moved on the list. The names of the pieces determine how they are
-        # called. Some get the board passed to them so they can use check space.
-        # Others don't need it.
+        # if the move is valid the pieces movement returns true.The names of the
+        # pieces determine how they are called. Some get the board passed to
+        # them so they can use check space. Others don't need it.
         if current_piece.get_name() in ["Soldier", "Advisor"]:
 
-            # the movement for these three is only passed the
-            # move_to_coordinates
+            # only passed the move_to_coordinates
             if current_piece.movement(move_to_coordinates) == True:
 
-                # test in check returns whether or not the move clears the
-                # check. If it does execution continues, else return false.
+                # if the pieces color is in check, we see if the move clears it
                 if current_piece.get_color() == "red" and \
                         self._red_check == True:
+
+                    # test whether the move would clear it
                     if not self.test_in_check_move(target_coordinates,
                                                    move_to_coordinates,
                                                    current_piece,
                                                    targeted_space):
+
+                        # if the move wouldn't clear check
                         return False
 
+                # same as above but specific to black
                 if current_piece.get_color() == "black" and \
                         self._black_check == True:
 
-                    # test in check returns whether or not the move clears the
-                    # check. If it does execution continues, else return false.
+                    # test whether the move would clear it
                     if not self.test_in_check_move(target_coordinates,
                                                    move_to_coordinates,
                                                    current_piece,
                                                    targeted_space):
+
+                        # if the move wouldn't clear check
                         return False
 
                 # check to see if the space being moved to is empty
+                # this is redundant an a symptom of my old control flow which
+                # was largely moved to _move_completion.
                 if targeted_space == " ":
+
                     # if the movement is valid for the piece _move_completion is
                     # called which handles the actual movement of the piece
                     # within the board.
@@ -215,14 +231,12 @@ class XiangqiGame:
                                           move_to_coordinates,
                                           current_piece)
 
-                    # the check finder is called to see if the move resulted in
-                    # a check.
+                    # see if a check resulted
                     self.check_finder(current_piece.get_color())
 
                     return True
 
-            # if the move cannot be completed by the piece make_move() returns
-            # false.
+            # if the move cannot be completed
             else:
                 return False
 
@@ -231,30 +245,38 @@ class XiangqiGame:
         if current_piece.get_name() in ["General", "Chariot", "Cannon",
                                         "Elephant", "Horse"]:
 
-            # if the movement is possible
+            # if the movement is possible, also passed the board.
             if current_piece.movement(self, move_to_coordinates) == True:
 
+                # if a piece's color is in check
                 if current_piece.get_color() == "red" and \
                         self._red_check == True:
+
+                    # test whether the move would clear a check
                     if not self.test_in_check_move(target_coordinates,
                                                    move_to_coordinates,
                                                    current_piece,
                                                    targeted_space):
+
+                        # if the move did not clear check
                         return False
 
+                # if a piece clor is in check
                 if current_piece.get_color() == "black" and \
                         self._black_check == True:
 
-                    # test in check returns whether or not the move clears the
-                    # check. If it does execution continues, else return false.
+                    # see whether the move would clear check
                     if not self.test_in_check_move(target_coordinates,
                                                    move_to_coordinates,
                                                    current_piece,
                                                    targeted_space):
+
+                        # if check wasn't cleared
                         return False
 
                 # check to see if the space being moved to is empty
                 if targeted_space == " ":
+
                     # if the movement is valid for the piece _move_completion is
                     # called which handles the actual movement of the piece
                     # within the board.
@@ -262,21 +284,20 @@ class XiangqiGame:
                                           move_to_coordinates,
                                           current_piece)
 
-                    # the check finder is called to see if the move resulted in
-                    # a check.
+                    # determine if the move resulted in check
                     self.check_finder(current_piece.get_color())
 
                     return True
 
-                # check to see if the being move to contains a general
+                # check to see if the space being moved to contains a general
                 if targeted_space.get_name() != "General":
 
+                    # complete the move
                     self._move_completion(target_coordinates,
                                           move_to_coordinates,
                                           current_piece)
 
-                    # the check finder is called to see if the move resulted in
-                    # a check.
+                    # see if the move cause check
                     self.check_finder(current_piece.get_color())
 
                     return True
@@ -295,10 +316,6 @@ class XiangqiGame:
                     self._move_completion(target_coordinates,
                                           move_to_coordinates,
                                           current_piece)
-
-                    # we don't update the list because someone has won and the
-                    # game is complete meaning that check doesn't matter any
-                    # more.
 
                     return True
 
@@ -324,12 +341,13 @@ class XiangqiGame:
         """
         Method allowing users to check the current state of the game.
         """
+
         return self._game_state
 
     def check_space(self, x_coord, y_coord):
         """
         Method which allows the program, to check the contents of a space.
-        Coordinates must be converted by convertNum and convertAlpha.
+        Coordinates must be converted to list indices.
         """
 
         return self._board[y_coord][x_coord]
@@ -349,6 +367,7 @@ class XiangqiGame:
         called by make_move() when necessary. So no touchy.
         """
 
+        # whatever is in the targeted space gets saved.
         targeted_space = self._board[self._convertNum[
             move_to_coordinates[1:]]][self._convertAlpha[
             move_to_coordinates[0]]]
@@ -377,6 +396,7 @@ class XiangqiGame:
 
         # update the pieces current location
         current_piece.location_setter(move_to_coordinates)
+
         # change who's turn it is
         if current_piece.get_color().lower() == 'red':
             self._player_turn = 'black'
@@ -406,19 +426,36 @@ class XiangqiGame:
             return "Color must be red or black."
 
     def show_list(self, color):
+        """
+        Method for displaying the list of pieces a color has.
+        :param color: "red" or "black"
+        :return: Nothing
+        """
 
+        # if color is black we display the current list of black pieces
         if color.lower() == "black":
+
             num = 1
+
             for piece in self._black_piece_list:
+
+                # print a number with the piece just to make it easier to track
                 print(num, piece.get_name(), piece.get_color(),
                       piece.get_location())
+
                 num += 1
 
+        # if color is red we display the current list of red pieces
         if color.lower() == "red":
+
             num = 1
+
             for piece in self._red_piece_list:
+
+                # print a number with the piece just to make it easier to track
                 print(num, piece.get_name(), piece.get_color(),
                       piece.get_location())
+
                 num += 1
 
     def check_finder(self, color):
@@ -426,7 +463,7 @@ class XiangqiGame:
         Method for checking whether a certain color is in check. Since each
         piece stores it's own movement validations and doesn't actually move the
         piece, we can call the pieces movement to see if the general is in
-        check.
+        check. If any piece returns true, check.
         :param color: the color of the team you want to know is in check
         :return: True or False
         """
@@ -443,8 +480,10 @@ class XiangqiGame:
 
                     # if a pieces movement returns True we set the check status
                     if piece.movement(self._black_general_location) == True:
+
                         # we would then set the check status to reflect this.
                         self._black_check = True
+
                         return True
 
                 # the names in this list get the board object passed to them.
@@ -454,7 +493,9 @@ class XiangqiGame:
                     # if a pieces movement returns True we set the check status
                     if piece.movement(self,
                                       self._black_general_location) == True:
+
                         self._black_check = True
+
                         return True
 
             # if the general is safe nothing happens.
@@ -470,8 +511,10 @@ class XiangqiGame:
 
                     # if a pieces movement returns True we set the check status
                     if piece.movement(self._red_general_location) == True:
+
                         # we would then set the check status to reflect this.
                         self._red_check = True
+
                         return True
 
                 # the names in this list get the board object passed to them.
@@ -480,8 +523,10 @@ class XiangqiGame:
 
                     # if a pieces movement returns True we set the check status
                     if piece.movement(self,
-                                      self._black_general_location) == True:
+                                      self._red_general_location) == True:
+
                         self._red_check = True
+
                         return True
 
             # if the general is safe nothing happens.
@@ -489,9 +534,10 @@ class XiangqiGame:
 
     def general_location(self, color, new_location):
         """
-        Setter method to update the generals location data member
+        Setter method to update the generals location data member in the board
         :return: Nothing
         """
+
         if color == 'red':
             self._red_general_location = new_location
 
@@ -499,6 +545,11 @@ class XiangqiGame:
             self._black_general_location = new_location
 
     def display_general(self):
+        """
+        Method for tracking a generals location on the board since tracking it
+        correctly is integral to how check_finder works.
+        :return: Nothing
+        """
         print("black", self._black_general_location)
         print("red", self._red_general_location)
 
@@ -564,7 +615,7 @@ class XiangqiGame:
 
 class GamePieces:
     """
-    A super class for all the other game pieces that gets used to streamline
+    A super class for all the game pieces that gets used to streamline
     initializing different pieces.
     """
 
@@ -572,12 +623,15 @@ class GamePieces:
         """
         A method used as a super() to initialize pieces. Every piece has it's
         own convertAlpha, convertNum, color, and location data members.
-        :param color:
-        :param location:
+        :param color: "red" or "black"
+        :param location: string location in algebraic notation for the piece
+        location
         """
 
+        # every piece is assigned a color
         self._color = color
 
+        # contains the string algebraic notation for the pieces location
         self._location = location
 
         # convert alpha contains both the lower and upper case because using
@@ -591,16 +645,26 @@ class GamePieces:
                             "7": 6, "8": 7, "9": 8, "10": 9}
 
     def location_setter(self, new_location):
+        """
+        Method for setting a pieces location
+        :param new_location: algebraic string of the pieces new location
+        :return: Nothing
+        """
         self._location = new_location
 
     def get_color(self):
         """
-        Method used to return a pieces color
-        :return:
+        Method used to return a pieces color, incredibly helpful.
+        :return: a pieces color
         """
+
         return self._color
 
     def get_location(self):
+        """
+        Method used to return the location data member of a piece.
+        :return: a pieces location as a string in algebraic notation.
+        """
         return self._location
 
 
@@ -611,11 +675,19 @@ class General(GamePieces):
     """
 
     def __init__(self, color, location):
+        """
+        Initializes a general piece
+        """
         self._name = "General"
         self._character = "師"
         super().__init__(color, location)
 
     def get_name(self):
+        """
+        Method that returns the pieces name.
+        :return: the pieces name
+        """
+
         return self._name
 
     def movement(self, board, next_location):
@@ -633,89 +705,116 @@ class General(GamePieces):
         new_x = self._convertAlpha[next_location[0]]
         new_y = self._convertNum[next_location[1:]]
 
+        # different bound checking for the black palace.
         if self._color == "black":
 
             # see if the x axis is changing
             if old_x != new_x:
+
+                # if the x_axis is changing it can only be by one
                 if new_x == old_x + 1 or new_x == old_x - 1:
-                    # if the x axis is changing we make sure it's only one
-                    # space being moved
+
+                    # check that it is with the confines of the palace
                     if 3 <= new_x <= 5:
-                        # if the move is in the palace the pieces location is
-                        # updated and True is returned.
-                        self._location = next_location
 
                         # since the board also tracks the generals location we
                         # must update the boards general location
                         board.general_location("black", next_location)
+
                         return True
+
+                    # if the move is not within the palace
                     else:
                         return False
+
+                # if the move is move than one on the x_axis
                 else:
                     return False
 
-            # first we check to see if the y axis is changing
+            # check to see if the y axis is changing
             if old_y != new_y:
+
                 # if y axis is changing we make sure it's only one space moved
                 if new_y == old_y + 1 or new_y == old_y - 1:
+
                     # then we make sure the move is in the palace
                     if 7 <= new_y <= 9:
+
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
                         board.general_location("black", next_location)
+
                         return True
+
+                    # if the move is more than one space
                     else:
                         return False
 
                 # the black Generals flying general move
                 # if we are targeting the general on the other side.
-                if board.check_space(new_x, new_y).get_name() == "General":
+                if board.check_space(new_x, new_y) != " ":
+                    if board.check_space(new_x, new_y).get_name() == "General":
 
-                    space = old_y
-                    # we iterate through the board on the y_axis to check for
-                    # whether the generals can actually see each other. Since we
-                    # already know new_y would be the target generals y_coord we
-                    # check just up to the general.
-                    while space != new_y + 1:
-                        space -= 1
+                        space = old_y
 
-                        # if something is in the way we return false.
-                        if board.check_space(old_x, space) != " ":
-                            return False
+                        # we iterate through the board on the y_axis to check for
+                        # whether the generals can actually see each other. Since we
+                        # already know new_y would be the target generals y_coord we
+                        # check just up to the general.
+                        while space != new_y + 1:
+                            space -= 1
 
-                    # if nothing is in the way the move goes through.
+                            # if something is in the way we return false.
+                            if board.check_space(old_x, space) != " ":
+                                return False
+
+                        # if nothing is in the way the move goes through.
+                        else:
+                            board.general_location("black", next_location)
+                            self._location = next_location
+                            return True
+
+                    # if the space being moved to is not a general
                     else:
-                        board.general_location("black", next_location)
-                        self._location = next_location
-                        return True
+                        return False
 
+                # the move is invalid
                 else:
                     return False
 
+            # if the move is invalid
             else:
                 return False
 
+        # red general has different palace bounds
         if self._color == "red":
 
             # see if the x axis is changing
             if old_x != new_x:
+
+                # if the x_axis is changing, it must be by 1
                 if new_x == old_x + 1 or new_x == old_x - 1:
-                    # if the x axis is changing we make sure it's only one
-                    # space being moved
+
+                    # check to make sure it's within palace bounds
                     if 3 <= new_x <= 5:
+
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
                         board.general_location("red", next_location)
                         return True
+
+                    # if the move is outside the palace
                     else:
                         return False
+
+                # if the move is more than one space
                 else:
                     return False
 
-            # first we check to see if the y axis is changing
+            # check to see if the y axis is changing
             if old_y != new_y:
 
-                # if y axis is changing we make sure it's only one space moved
+                # check to see if it's a typical move
                 if new_y == old_y + 1 or new_y == old_y - 1:
 
                     # then we make sure the move is in the palace
@@ -752,9 +851,11 @@ class General(GamePieces):
                         board.general_location("red", next_location)
                         return True
 
+                # if no valid move was made
                 else:
                     return False
 
+            # if no valid move was made
             else:
                 return False
 
@@ -767,6 +868,11 @@ class Soldier(GamePieces):
         super().__init__(color, location)
 
     def get_name(self):
+        """
+        Method that returns the pieces name.
+        :return: the pieces name
+        """
+
         return self._name
 
     def movement(self, next_location):
@@ -837,6 +943,11 @@ class Chariot(GamePieces):
         super().__init__(color, location)
 
     def get_name(self):
+        """
+        Method that returns the pieces name.
+        :return: the pieces name
+        """
+
         return self._name
 
     def movement(self, board, next_location):
@@ -923,6 +1034,11 @@ class Cannon(GamePieces):
         super().__init__(color, location)
 
     def get_name(self):
+        """
+        Method that returns the pieces name.
+        :return: the pieces name
+        """
+
         return self._name
 
     def movement(self, board, next_location):
@@ -1121,6 +1237,11 @@ class Advisor(GamePieces):
         super().__init__(color, location)
 
     def get_name(self):
+        """
+        Method that returns the pieces name.
+        :return: the pieces name
+        """
+
         return self._name
 
     def movement(self, next_location):
@@ -1191,6 +1312,11 @@ class Elephant(GamePieces):
         super().__init__(color, location)
 
     def get_name(self):
+        """
+        Method that returns the pieces name.
+        :return: the pieces name
+        """
+
         return self._name
 
     def movement(self, board, next_location):
@@ -1361,6 +1487,11 @@ class Horse(GamePieces):
         super().__init__(color, location)
 
     def get_name(self):
+        """
+        Method that returns the pieces name.
+        :return: the pieces name
+        """
+
         return self._name
 
     def movement(self, board, next_location):
