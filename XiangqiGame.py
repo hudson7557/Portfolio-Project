@@ -861,6 +861,9 @@ class General(GamePieces):
 
 
 class Soldier(GamePieces):
+    """
+    Class used to represent the soldier pieces
+    """
 
     def __init__(self, color, location):
         """
@@ -951,8 +954,16 @@ class Soldier(GamePieces):
 
 
 class Chariot(GamePieces):
+    """
+    Class used to represent the chariot piece
+    """
 
     def __init__(self, color, location):
+        """
+        Creates an instance of a Chariot
+
+        """
+        
         self._name = "Chariot"
         self._character = "車"
         super().__init__(color, location)
@@ -966,7 +977,8 @@ class Chariot(GamePieces):
         return self._name
 
     def movement(self, board, next_location):
-
+        
+        # converting the string location to list indices 
         old_x = self._convertAlpha[self._location[0]]
         old_y = self._convertNum[self._location[1:]]
         new_x = self._convertAlpha[next_location[0]]
@@ -974,69 +986,135 @@ class Chariot(GamePieces):
 
         # moving left?
         if old_x > new_x and old_y == new_y:
+            
             space = old_x
+            
+            # check to see if the move is valid, if it hits a piece prior to 
+            # space being equal to the new_x it will return false.
             while space != new_x:
+                
                 space -= 1
+                
+                # see if the next space is occupied
                 if board.check_space(space, old_y) != " ":
+                    
+                    # check if the piece is on the same team
                     if board.check_space(space, old_y).get_color() != \
                             self.get_color():
+                        
+                        # if we're taking a piece
                         if space == new_x:
                             return True
+                        
+                        # if someone is in the way 
                         if space != new_x:
                             return False
+                        
+                    # if the space contains a friendly piece
                     else:
                         return False
+                    
+            # if nothing tripped the false
             return True
 
         # moving right?
         if old_x < new_x and old_y == new_y:
+            
             space = old_x
+            
+            # check to see if the move is valid
             while space != new_x:
+                
                 space += 1
+                
+                # if the space is occupied 
                 if board.check_space(space, old_y) != " ":
+                    
+                    #  make sure no one is in the way
                     if board.check_space(space, old_y).get_color() != \
                             self.get_color():
+                        
+                        # if the piece is not friendly and is in our target 
+                        # destination we take it
                         if space == new_x:
                             return True
+                        
+                        # if the piece is not our target piece
                         if space != new_x:
                             return False
+
+                    # if a friendly is in the way
                     else:
                         return False
+
+            # if a valid, non taking, move was made
             return True
 
         # moving forward?
         if old_y > new_y and old_x == new_x:
+
             space = old_y
+
+            # check to make sure nothing is in the way
             while space != new_y:
+
                 space -= 1
+
+                # if a space is occupied
                 if board.check_space(old_x, space) != " ":
+
+                    # can't must not be a friendly piece
                     if board.check_space(old_x, space).get_color() != \
                             self.get_color():
+
+                        # if the space is the same as our targeted space
                         if space == new_y:
                             return True
+
+                        # if the space is not our targeted space
                         if space != new_y:
                             return False
+
+                    # if no valid move was made
                     else:
                         return False
 
+            # if a valid non taking move was made
             return True
 
         # moving backwards?
         if old_y < new_y and old_x == new_x:
+
             space = old_y
+
+            # check to see if the move is valid
             while space != new_y:
+
                 space += 1
+
+                # if a space is occupied
                 if board.check_space(old_x, space) != " ":
+
+                    # if the piece is not friendly
                     if board.check_space(old_x, space).get_color() != \
                             self.get_color():
+
+                        # if it is at our target location we take it
                         if space == new_y:
                             return True
+
+                        # if it is not at the target location it blocks
                         if space != new_y:
                             return False
+
+                    # if the piece in the way is friendly
                     else:
                         return False
+
+            # if a non taking move was made
             return True
 
+        # if no valid move was made
         else:
             return False
 
