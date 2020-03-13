@@ -102,12 +102,10 @@ class XiangqiGame:
                    " - ", " "]]
 
 
-list_1 = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]
+list_1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-list_2 = [num for sublist in list_1 for num in sublist if num % 2 == 0]
-
-print(list_2)
+list_1.remove(2)
+print(list_1)
 
 # def test_in_check_move(target_coordinates, move_to_coordinates,
 # current, targeted_piece):

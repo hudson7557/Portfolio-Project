@@ -26,7 +26,7 @@ class XiangqiGame:
              Elephant("red", "C1"), Advisor("red", "D1"),
              General("red", "E1"), Advisor("red", "F1"),
              Elephant("red", "G1"), Horse("red", "H1"),
-             Chariot("rec", "I1")],
+             Chariot("red", "I1")],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
             [" ", Cannon("red", "B3"), " ", " ", " ", " ", " ",
              Cannon("red", "H3"), " "],
@@ -42,7 +42,7 @@ class XiangqiGame:
              Cannon("black", "H8"), " "],
             [" ", " ", " ", " ", " ", " ", " ", " ", " "],
             [Chariot("black", "A10"), Horse("black", "B10"),
-             Elephant("black", "C10"),Advisor("black", "D10"),
+             Elephant("black", "C10"), Advisor("black", "D10"),
              General("black", "E10"), Advisor("black", "F10"),
              Elephant("black", "G10"), Horse("black", "H10"),
              Chariot("black", "I10")]]
@@ -160,6 +160,11 @@ class XiangqiGame:
 
                 # check to make sure the move doesn't result in check for the
                 # color moving.
+                if self.prevent_check(target_coordinates,
+                                      move_to_coordinates,
+                                      current_piece,
+                                      targeted_space) == True:
+                    return False
 
 
                 # if the pieces color is in check, we see if the move clears it
@@ -265,7 +270,7 @@ class XiangqiGame:
                         # if the move did not clear check
                         return False
 
-                # if a piece clor is in check
+                # if a pieces color is in check
                 if current_piece.get_color() == "black" and \
                         self._black_check == True:
 
@@ -578,7 +583,8 @@ class XiangqiGame:
                     self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
 
                 # replace the targeted piece in the list of pieces
-                self._black_piece_list.append(targeted_piece)
+                if targeted_piece != " ":
+                    self._black_piece_list.append(targeted_piece)
 
                 # reset check
                 self._red_check = False
@@ -594,7 +600,8 @@ class XiangqiGame:
                     self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
 
                 # still add the targeted piece back into the list of pieces
-                self._black_piece_list.append(targeted_piece)
+                if targeted_piece != " ":
+                    self._black_piece_list.append(targeted_piece)
                 return False
 
         if current_piece.get_color() == 'black':
@@ -611,7 +618,8 @@ class XiangqiGame:
                     self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
 
                 # replace the targeted_piece in the list of pieces
-                self._red_piece_list.append(targeted_piece)
+                if targeted_piece != " ":
+                    self._red_piece_list.append(targeted_piece)
 
                 # change check
                 self._black_check = False
@@ -627,8 +635,79 @@ class XiangqiGame:
                     self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
 
                 # replace the piece in the list
-                self._red_piece_list.append(targeted_piece)
+                if targeted_piece != " ":
+                    self._red_piece_list.append(targeted_piece)
                 return False
+
+    def prevent_check(self, target_coordinates, move_to_coordinates,
+                           current_piece, targeted_piece):
+
+        # we make the move and the piece is removed from the list (potentially)
+        self._move_completion(target_coordinates, move_to_coordinates,
+                              current_piece)
+
+        # if black is moving we check if black is now in check
+        if current_piece.get_color() == 'black':
+
+                # our list of pieces contains all the red piece objects
+                for piece in self._red_piece_list:
+
+                    # we sort which call is made to their movement
+                    if piece.get_name() in ["Soldier", "Advisor"]:
+
+                        # if a pieces movement returns True we return True
+                        if piece.movement(self._black_general_location) == True:
+
+                            return True
+                    # the names in this list get the board object passed to them.
+                    if piece.get_name() in ["General", "Chariot", "Cannon",
+                                            "Elephant", "Horse"]:
+
+                        # if a pieces movement returns True we return True
+                        if piece.movement(self,
+                                          self._black_general_location) == True:
+
+                            return True
+
+        # if the piece moving is red
+        if current_piece.get_color() == "red":
+
+            # our list of pieces contains all the red piece objects
+            for piece in self._black_piece_list:
+
+                # we sort which call is made to their movement
+                if piece.get_name() in ["Soldier", "Advisor"]:
+
+                    # if a pieces movement returns True we return True
+                    if piece.movement(self._red_general_location) == True:
+                        return True
+                # the names in this list get the board object passed to them.
+                if piece.get_name() in ["General", "Chariot", "Cannon",
+                                        "Elephant", "Horse"]:
+
+                    # if a pieces movement returns True we return True
+                    if piece.movement(self,
+                                      self._red_general_location) == True:
+                        return True
+
+        # reverse the move
+        self._move_completion(move_to_coordinates,
+                              target_coordinates, current_piece)
+
+        # replace the targeted_piece
+        self._board[self._convertNum[move_to_coordinates[1:]]][
+            self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
+
+        # replace the piece in the list if it is a piece
+        if targeted_piece != " ":
+
+            if targeted_piece.get_color() == "red":
+                self._red_piece_list.append(targeted_piece)
+
+            if targeted_piece.get_color() == "black":
+                self._black_piece_list.append(targeted_piece)
+
+        return False
 
 class GamePieces:
     """
@@ -667,7 +746,7 @@ class GamePieces:
         :param new_location: algebraic string of the pieces new location
         :return: Nothing
         """
-        self._location = new_location
+        self._location = new_location.upper()
 
     def get_color(self):
         """
