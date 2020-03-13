@@ -2,6 +2,7 @@
 # Date: 03/04/2020
 # Description: This is the Xiangqi game program which contains multiple classes
 # for playing the game Xiangqi, also known as Chinese chess.
+# - this took 8 days :)
 
 
 class XiangqiGame:
@@ -293,6 +294,16 @@ class XiangqiGame:
                                           move_to_coordinates,
                                           current_piece)
 
+                    # if the piece moved was a general we update it's location
+                    # (in the board)
+                    if current_piece.get_name() == "General":
+
+                        if current_piece.get_color() == 'black':
+                            self._black_general_location = move_to_coordinates
+
+                        if current_piece.get_color() == 'red':
+                            self._red_general_location = move_to_coordinates
+
                     # determine if the move resulted in check
                     self.check_finder(current_piece.get_color())
 
@@ -306,6 +317,16 @@ class XiangqiGame:
                                           move_to_coordinates,
                                           current_piece)
 
+                    # if the piece moved was a general we update it's location
+                    # (in the board)
+                    if current_piece.get_name() == "General":
+
+                        if current_piece.get_color() == 'black':
+                            self._black_general_location = move_to_coordinates
+
+                        if current_piece.get_color() == 'red':
+                            self._red_general_location = move_to_coordinates
+
                     # see if the move cause check
                     self.check_finder(current_piece.get_color())
 
@@ -315,6 +336,16 @@ class XiangqiGame:
                 # to see if it is not general we know the targeted piece is a
                 # general.
                 else:
+
+                    # if the piece moved was a general we update it's location
+                    # (in the board)
+                    if current_piece.get_name() == "General":
+
+                        if current_piece.get_color() == 'black':
+                            self._black_general_location = move_to_coordinates
+
+                        if current_piece.get_color() == 'red':
+                            self._red_general_location = move_to_coordinates
 
                     # the game state is changed to reflect which ever color took
                     # a general has won
@@ -327,24 +358,6 @@ class XiangqiGame:
                                           current_piece)
 
                     return True
-
-    def display_character(self, target_coordinates):
-        """
-        DELETE - ACCESSES DATA MEMBERS IT SHOULDN'T
-        Method to display a piece on the board. Used primarily for checking to
-        see if a piece was created accurately.
-        :param target_coordinates: coordinates of the target piece
-        """
-        current_piece = self._board[self._convertNum[target_coordinates[1:]]][
-            self._convertAlpha[target_coordinates[0]]]
-
-        # if the space is empty it will print a statement letting us know
-        if current_piece == " ":
-            print("Space is empty.")
-        # if the space is not empty it prints some of the pieces data
-        else:
-            print(current_piece._color, current_piece._name,
-                  current_piece._location, current_piece._character)
 
     def get_game_state(self):
         """
@@ -403,8 +416,9 @@ class XiangqiGame:
         self._board[self._convertNum[target_coordinates[1:]]][
             self._convertAlpha[target_coordinates[0]]] = " "
 
-        # update the pieces current location
+        # update the pieces current location (in the piece)
         current_piece.location_setter(move_to_coordinates)
+
 
         # change who's turn it is
         if current_piece.get_color().lower() == 'red':
@@ -813,10 +827,6 @@ class General(GamePieces):
                     # check that it is with the confines of the palace
                     if 3 <= new_x <= 5:
 
-                        # since the board also tracks the generals location we
-                        # must update the boards general location
-                        board.general_location("black", next_location)
-
                         return True
 
                     # if the move is not within the palace
@@ -835,10 +845,6 @@ class General(GamePieces):
 
                     # then we make sure the move is in the palace
                     if 7 <= new_y <= 9:
-
-                        # if the move is in the palace the pieces location is
-                        # updated and True is returned.
-                        board.general_location("black", next_location)
 
                         return True
 
@@ -867,7 +873,6 @@ class General(GamePieces):
 
                         # if nothing is in the way the move goes through.
                         else:
-                            board.general_location("black", next_location)
                             return True
 
                     # if the space being moved to is not a general
@@ -896,7 +901,6 @@ class General(GamePieces):
 
                         # if the move is in the palace the pieces location is
                         # updated and True is returned.
-                        board.general_location("red", next_location)
                         return True
 
                     # if the move is outside the palace
@@ -916,10 +920,6 @@ class General(GamePieces):
                     # then we make sure the move is in the palace
                     if 0 <= new_y <= 2:
 
-                        # if the move is in the palace the pieces location is
-                        # updated both in the piece and in the board data member
-                        # and True is returned.
-                        board.general_location("red", next_location)
                         return True
                     else:
                         return False
@@ -944,7 +944,6 @@ class General(GamePieces):
 
                     # if nothing is in the way the move goes through.
                     else:
-                        board.general_location("red", next_location)
                         return True
 
                 # if no valid move was made
