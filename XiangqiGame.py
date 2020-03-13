@@ -158,6 +158,10 @@ class XiangqiGame:
             # only passed the move_to_coordinates
             if current_piece.movement(move_to_coordinates) == True:
 
+                # check to make sure the move doesn't result in check for the
+                # color moving.
+
+
                 # if the pieces color is in check, we see if the move clears it
                 if current_piece.get_color() == "red" and \
                         self._red_check == True:
@@ -555,6 +559,7 @@ class XiangqiGame:
 
     def test_in_check_move(self, target_coordinates, move_to_coordinates,
                            current_piece, targeted_piece):
+
         # make move in the actual board
         self._move_completion(target_coordinates, move_to_coordinates,
                               current_piece)
@@ -563,26 +568,32 @@ class XiangqiGame:
 
             # check for check
             if self.check_finder('black') == False:
+
                 # reverse the move
                 self._move_completion(move_to_coordinates,
                                       target_coordinates, current_piece)
+
+                # replace the targeted_piece
                 self._board[self._convertNum[move_to_coordinates[1:]]][
                     self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
 
+                # replace the targeted piece in the list of pieces
                 self._black_piece_list.append(targeted_piece)
 
-                if current_piece.get_color() == "red":
-                    self._red_check = False
-                if current_piece.get_color() == "black":
-                    self._black_check = False
+                # reset check
+                self._red_check = False
                 return True
 
             else:
                 # still reverse the move
                 self._move_completion(move_to_coordinates,
                                       target_coordinates, current_piece)
+
+                # still replace the targeted_piece
                 self._board[self._convertNum[move_to_coordinates[1:]]][
                     self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
+
+                # still add the targeted piece back into the list of pieces
                 self._black_piece_list.append(targeted_piece)
                 return False
 
@@ -590,26 +601,32 @@ class XiangqiGame:
 
             # check for check
             if self.check_finder('red') == False:
+
                 # reverse the move
                 self._move_completion(move_to_coordinates,
                                       target_coordinates, current_piece)
+
+                # replace the targeted_piece
                 self._board[self._convertNum[move_to_coordinates[1:]]][
                     self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
 
+                # replace the targeted_piece in the list of pieces
                 self._red_piece_list.append(targeted_piece)
 
-                if current_piece.get_color() == "red":
-                    self._red_check = False
-                if current_piece.get_color() == "black":
-                    self._black_check = False
+                # change check
+                self._black_check = False
                 return True
 
             else:
                 # still reverse the move
                 self._move_completion(move_to_coordinates,
                                       target_coordinates, current_piece)
+
+                # still replace the targeted_piece
                 self._board[self._convertNum[move_to_coordinates[1:]]][
                     self._convertAlpha[move_to_coordinates[0]]] = targeted_piece
+
+                # replace the piece in the list
                 self._red_piece_list.append(targeted_piece)
                 return False
 
@@ -757,11 +774,12 @@ class General(GamePieces):
 
                         space = old_y
 
-                        # we iterate through the board on the y_axis to check for
-                        # whether the generals can actually see each other. Since we
-                        # already know new_y would be the target generals y_coord we
-                        # check just up to the general.
+                        # we iterate through the board on the y_axis to check
+                        # for whether the generals can actually see each other.
+                        # Since we already know new_y would be the target
+                        # generals y_coord we check just up to the general.
                         while space != new_y + 1:
+
                             space -= 1
 
                             # if something is in the way we return false.
@@ -771,7 +789,6 @@ class General(GamePieces):
                         # if nothing is in the way the move goes through.
                         else:
                             board.general_location("black", next_location)
-                            self._location = next_location
                             return True
 
                     # if the space being moved to is not a general
@@ -1424,7 +1441,7 @@ class Advisor(GamePieces):
             else:
                 return False
 
-        # red conatins it's own bounds checks
+        # red contains it's own bounds checks
         if self._color == "red":
 
             # check to make sure the move to space is within the palace
